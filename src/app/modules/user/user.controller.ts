@@ -15,7 +15,74 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 })
 
+const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+    const result = await userServices.getAllUsers(query as Record<string, string>);
+
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "All Users Retrieved Successfully",
+        data: result.data,
+        meta: result.meta
+    })
+})
+
+
+const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user
+    const result = await userServices.getMe(decodedToken.userId);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Your profile Retrieved Successfully",
+        data: result.data
+    })
+})
+const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await userServices.getSingleUser(id as string);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User Retrieved Successfully",
+        data: result.data
+    })
+})
+
+
+const deleteSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    const result = await userServices.deleteSingleUser(id as string);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User Deleted Successfully",
+        data: result
+    })
+})
+
+
+const updateSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const updateUser = req.body;
+    const result = await userServices.updateSingleUser(id as string, updateUser);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "User Updated Successfully",
+        data: result
+    })
+});
+
+
 export const userControllers = {
     createUser,
-  
+    getAllUsers,
+    getSingleUser,
+    getMe,
+    deleteSingleUser,
+    updateSingleUser
 }
