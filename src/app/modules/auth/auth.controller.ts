@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import httpStatus from 'http-status-codes';
 import { authServices } from './auth.service.js';
@@ -6,6 +7,9 @@ import type { Request, Response, NextFunction } from 'express';
 import { sendResponse } from '../../utils/sendResponse.js';
 import { catchAsync } from '../../utils/catchAsync.js';
 import type { JwtPayload } from 'jsonwebtoken';
+import AppError from '../../helpers/AppError.js';
+import { createUserTokens } from '../../utils/userTokens.js';
+import config from '../../config/index.js';
 
 const credentialsLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -42,6 +46,23 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
 })
 
 
+const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user
+
+    await authServices.changePassword(oldPassword, newPassword, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
+
+
 const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const decodedToken = req.user
@@ -73,9 +94,45 @@ const forgotPassword = catchAsync(async (req: Request, res: Response, next: Next
 })
 
 
+
+
+const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    let redirectTo = req.query.state ? req.query.state as string : ""
+
+    if (redirectTo.startsWith("/")) {
+        redirectTo = redirectTo.slice(1)
+    }
+
+    // /booking => booking , => "/" => ""
+    const user= req.user;
+
+    // console.log("............user..........",user)
+
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+
+    const tokenInfo = createUserTokens(user as any)
+
+    setAuthCookie(res, tokenInfo)
+
+    // sendResponse(res, {
+    //     success: true,
+    //     statusCode: httpStatus.OK,
+    //     message: "Password Changed Successfully",
+    //     data: null,
+    // })
+
+    res.redirect(`${config.frontend_url}/${redirectTo}`)
+})
+
+
 export const authControllers = {
   credentialsLogin,
   logout,
   resetPassword,
-  forgotPassword
+  forgotPassword,
+  changePassword,
+  googleCallbackController
 };

@@ -95,6 +95,23 @@ const forgotPassword = async (email: string) => {
 }
 
 
+const changePassword = async (oldPassword: string, newPassword: string, decodedToken: JwtPayload) => {
+
+    const user = await userModel.findById(decodedToken.userId)
+
+    const isOldPasswordMatch = await bcrypt.compare(oldPassword, user!.password as string)
+    if (!isOldPasswordMatch) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "Old Password does not match");
+    }
+
+    user!.password = await bcrypt.hash(newPassword, Number(config.bcrypt_salt_round))
+
+    user!.save();
+
+
+}
+
+
 const resetPassword = async (payload: Record<string, any>, decodedToken: JwtPayload) => {
     if (payload.id != decodedToken.userId) {
         throw new AppError(401, "You can not reset your password")
@@ -122,5 +139,6 @@ const resetPassword = async (payload: Record<string, any>, decodedToken: JwtPayl
 export const authServices = {
   loginUser,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  changePassword
 };
