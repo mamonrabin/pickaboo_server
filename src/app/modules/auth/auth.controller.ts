@@ -5,6 +5,7 @@ import { setAuthCookie } from '../../utils/setCookie.js';
 import type { Request, Response, NextFunction } from 'express';
 import { sendResponse } from '../../utils/sendResponse.js';
 import { catchAsync } from '../../utils/catchAsync.js';
+import type { JwtPayload } from 'jsonwebtoken';
 
 const credentialsLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +41,41 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
     })
 })
 
+
+const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req.user
+
+    await authServices.resetPassword(req.body, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
+
+
+const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const { email } = req.body;
+
+    await authServices.forgotPassword(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Email Sent Successfully",
+        data: null,
+    })
+})
+
+
 export const authControllers = {
   credentialsLogin,
-  logout
+  logout,
+  resetPassword,
+  forgotPassword
 };
