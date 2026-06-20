@@ -1,0 +1,1 @@
+export const productSearchableFields = ["title","category","subCategory","brand","size","stock_status","labels"];

@@ -54,6 +54,8 @@ const updateSingleCategory = async (
   return result;
 };
 
+
+
 const deleteSingleCategory = async (id: string) => {
   const result = await categoryModel.findByIdAndDelete(id);
   return result;

@@ -4,6 +4,9 @@ import { AuthRoutes } from "../modules/auth/auth.route.js"
 import { categoryRoutes } from "../modules/category/category.route.js"
 import { subcategoryRoutes } from "../modules/sub-category/sub-category.route.js"
 import { sizeRoutes } from "../modules/size/size.route.js"
+import { colorRoutes } from "../modules/color/color.route.js"
+import { brandRoutes } from "../modules/brand/brand.route.js"
+import { productRoutes } from "../modules/product/product.route.js"
 
 
 export const router = Router()
@@ -26,8 +29,20 @@ const moduleRoutes = [
         route: subcategoryRoutes
     },
     {
+        path: "/brand",
+        route: brandRoutes
+    },
+    {
         path: "/size",
         route: sizeRoutes
+    },
+    {
+        path: "/color",
+        route: colorRoutes
+    },
+    {
+        path: "/product",
+        route: productRoutes
     },
    
 ]
