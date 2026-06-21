@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { NextFunction, Request, Response } from "express";
-import httpStatus from "http-status-codes";
-import { catchAsync } from "../../utils/catchAsync.js";
-import { productService } from "./product.service.js";
-import { sendResponse } from "../../utils/sendResponse.js";
+import type { NextFunction, Request, Response } from 'express';
+import httpStatus from 'http-status-codes';
+import { catchAsync } from '../../utils/catchAsync.js';
+import { productService } from './product.service.js';
+import { sendResponse } from '../../utils/sendResponse.js';
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const files = req.files as any;
@@ -14,25 +14,22 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   const thumbnail = files?.thumbnailImage?.[0]?.filename;
   const backview = files?.backviewImage?.[0]?.filename;
 
-  const images =
-    files?.images?.map((f: any) => `/uploads/${f.filename}`) || [];
+  const images = files?.images?.map((f: any) => `/uploads/${f.filename}`) || [];
 
   const result = await productService.createProduct({
     ...productData,
-    thumbnailImage: thumbnail ? `/uploads/${thumbnail}` : "",
-    backviewImage: backview ? `/uploads/${backview}` : "",
+    thumbnailImage: thumbnail ? `/uploads/${thumbnail}` : '',
+    backviewImage: backview ? `/uploads/${backview}` : '',
     images,
   });
 
   return sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
-    message: "Product created successfully",
+    message: 'Product created successfully',
     data: result,
   });
 });
-
-
 
 const getAllProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -40,6 +37,22 @@ const getAllProduct = catchAsync(
     const result = await productService.getAllProduct(
       query as Record<string, string>,
     );
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get all product successfully',
+      data: result,
+    });
+  },
+);
+
+const getReletiveProduct = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const limit = req.query.limit ? Number(req.query.limit) : 8;
+
+    const result = await productService.getRelatedProducts(id as string, limit);
 
     return sendResponse(res, {
       success: true,
@@ -67,9 +80,7 @@ const getSingleProduct = catchAsync(
 const getSingleProductBySlug = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
-    const result = await productService.getSingleProductBySlug(
-      slug as string,
-    );
+    const result = await productService.getSingleProductBySlug(slug as string);
 
     return sendResponse(res, {
       success: true,
@@ -79,7 +90,6 @@ const getSingleProductBySlug = catchAsync(
     });
   },
 );
-
 
 const updateSingleProduct = async (
   req: Request,
@@ -107,7 +117,10 @@ const updateSingleProduct = async (
       ...(images.length > 0 && { images }),
     };
 
-    const result = await productService.updateSingleProduct(id as string, updatedProduct);
+    const result = await productService.updateSingleProduct(
+      id as string,
+      updatedProduct,
+    );
 
     res.status(200).json({
       success: true,
@@ -140,8 +153,9 @@ const deleteSingleProduct = async (
 export const productController = {
   createProduct,
   getAllProduct,
+  getReletiveProduct,
   getSingleProduct,
   getSingleProductBySlug,
   updateSingleProduct,
-  deleteSingleProduct
+  deleteSingleProduct,
 };

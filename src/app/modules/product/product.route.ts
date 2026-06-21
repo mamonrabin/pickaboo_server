@@ -15,6 +15,7 @@ router.post(
 );
 
 router.get('/', productController.getAllProduct);
+router.get('/related/:id', productController.getReletiveProduct);
 router.get('/:id', productController.getSingleProduct);
 router.get('/productSlug/:slug', productController.getSingleProductBySlug);
 router.put(
