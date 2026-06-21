@@ -1,28 +1,23 @@
-import { model, Schema, type HydratedDocument } from 'mongoose';
-import type { TCategory } from './banner.interface.js';
-import { generateSlug } from '../../utils/slug.js';
+import { model, Schema } from 'mongoose';
+import type { TBanner } from './banner.interface.js';
 
-const categorySchema = new Schema<TCategory>(
+const bannerSchema = new Schema<TBanner>(
   {
-    categoryName: { type: String, required: true },
     title: { type: String },
-    slug: { type: String, unique: true },
-    image: { type: String, default: '', required: true },
+    description: { type: String },
+    category: { type: Schema.Types.ObjectId, ref: 'category' },
+    link: { type: String },
+    image: { type: String, required: true },
+
+    type: {
+      type: String,
+      enum: ['photo', 'photowithdescription'],
+      default: 'photo',
+    },
   },
   {
     timestamps: true,
   },
 );
 
-categorySchema.pre('save', async function () {
-  const category = this as HydratedDocument<TCategory>;
-
-  if (
-    (category.isModified('categoryName') || category.isNew) &&
-    category.categoryName
-  ) {
-    category.slug = generateSlug(category.categoryName);
-  }
-});
-
-export const categoryModel = model<TCategory>('category', categorySchema);
+export const bannerModel = model<TBanner>('banner', bannerSchema);

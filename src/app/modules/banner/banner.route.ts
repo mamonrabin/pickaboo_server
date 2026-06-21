@@ -1,22 +1,22 @@
 import express from 'express';
 import upload from '../../utils/ImgUploder.js';
-import { categoryController } from './banner.controller.js';
+import { bannerController } from './banner.controller.js';
+
 
 const router = express.Router();
 
 router.post(
-  '/create-category',
+  '/create-banner',
   upload.single('image'),
-  categoryController.createCategory,
+  bannerController.createBanner,
 );
-router.get('/', categoryController.getAllCategory);
-router.get('/:id', categoryController.getSingleCategory);
-router.get('/categorySlug/:slug', categoryController.getSingleCategoryBySlug);
+router.get('/', bannerController.getAllBanner);
+
 router.put(
   '/:id',
   upload.single('image'),
-  categoryController.updateSingleCategory,
+  bannerController.updateSingleBanner,
 );
-router.delete('/:id', categoryController.deleteSingleCategory);
+router.delete('/:id', bannerController.deleteSingleBanner);
 
-export const categoryRoutes = router;
+export const bannerRoutes = router;

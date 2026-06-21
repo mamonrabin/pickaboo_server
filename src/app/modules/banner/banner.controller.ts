@@ -1,117 +1,87 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { NextFunction, Request, Response } from 'express';
-import { categoryService } from './banner.service.js';
+
 import { catchAsync } from '../../utils/catchAsync.js';
 import { sendResponse } from '../../utils/sendResponse.js';
 import httpStatus from 'http-status-codes';
+import { bannerService } from './banner.service.js';
 
-const createCategory = catchAsync(
+const createBanner = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const category = req.body;
+    const banner = req.body;
 
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
 
-    const result = await categoryService.createCategory({
-      ...category,
+    const result = await bannerService.createBanner({
+      ...banner,
       image: imageUrl,
     });
 
     return sendResponse(res, {
       success: true,
       statusCode: httpStatus.CREATED,
-      message: 'Category Created Successfully',
+      message: 'banner Created Successfully',
       data: result,
     });
   },
 );
 
-const getAllCategory = catchAsync(
+const getAllBanner = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const query = req.query;
-    const result = await categoryService.getAllCategory(
-      query as Record<string, string>,
-    );
+    const result = await bannerService.getAllBanner();
 
     return sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
-      message: ' get all category successfully',
+      message: ' get all banner successfully',
       data: result,
     });
   },
 );
 
-const getSingleCategory = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const result = await categoryService.getSingleCategory(id as string);
 
-    return sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: ' get single category successfully',
-      data: result,
-    });
-  },
-);
 
-const getSingleCategoryBySlug = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { slug } = req.params;
-    const result = await categoryService.getSingleCategoryBySlug(
-      slug as string,
-    );
 
-    return sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: 'get single category by slug successfully',
-      data: result,
-    });
-  },
-);
 
-const updateSingleCategory = catchAsync(async (req: Request, res: Response) => {
+const updateSingleBanner= catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updateCategory = req.body;
+  const updateBanner = req.body;
 
   const imageUrl = req.file
     ? `/uploads/${req.file.filename}`
-    : updateCategory.image;
+    : updateBanner.image;
 
-  const result = await categoryService.updateSingleCategory(id as string, {
-    ...updateCategory,
+  const result = await bannerService.updateSingleBanner(id as string, {
+    ...updateBanner,
     image: imageUrl,
   });
 
   return sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Category Updated Successfully',
+    message: 'banner Updated Successfully',
     data: result,
   });
 });
 
 
-const deleteSingleCategory = catchAsync(
+const deleteSingleBanner = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const result = await categoryService.deleteSingleCategory(id as string);
+    const result = await bannerService.deleteSingleBanner(id as string);
 
     return sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
-      message: ' delete single category successfully',
+      message: ' delete single banner successfully',
       data: result,
     });
   },
 );
 
-export const categoryController = {
-  createCategory,
-  getAllCategory,
-  getSingleCategory,
-  getSingleCategoryBySlug,
-  updateSingleCategory,
-  deleteSingleCategory
+export const bannerController = {
+  createBanner,
+  getAllBanner,
+  updateSingleBanner,
+  deleteSingleBanner
 };
