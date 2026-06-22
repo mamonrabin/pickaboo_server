@@ -38,6 +38,7 @@ export type TShippingAddress = {
 export type TOrder = {
   orderId: string;
   userRef?: ObjectId;
+  payment?:ObjectId;
   products: TOrderProduct[];
   shippingAddress: TShippingAddress;
   subTotalPrice: number;

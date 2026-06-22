@@ -1,18 +1,65 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose';
 import type { TOrder } from './order.interface.js';
 import { orderModel } from './order.model.js';
 import { productModel } from '../product/product.model.js';
 import { QueryBuilder } from '../../utils/QueryBuilder.js';
 import { orderSearchableFields } from './order.constant.js';
+import { Payment } from '../payment/payment.model.js';
+import { PAYMENT_STATUS } from '../payment/payment.interface.js';
 
 /**
  * CREATE ORDER (WITH TRANSACTION)
  */
+// const createOrder = async (order: TOrder) => {
+//   const session = await mongoose.startSession();
+
+//   try {
+//     session.startTransaction();
+
+//     // Create order
+//     const [createdOrder] = await orderModel.create([order], {
+//       session,
+//     });
+
+//     // Update stock
+//     for (const item of order.products) {
+//       const product = await productModel
+//         .findById(item.productRef)
+//         .session(session);
+
+//       if (!product) {
+//         throw new Error(`Product not found: ${item.productRef}`);
+//       }
+
+//       const availableQty =
+//         (product.quantity || 0) - (product.soldQuantity || 0);
+
+//       if (availableQty < item.quantity) {
+//         throw new Error(`Not enough stock for product: ${product.title}`);
+//       }
+//       product.soldQuantity = (product.soldQuantity || 0) + item.quantity;
+
+//       await product.save({ session });
+//     }
+
+//     await session.commitTransaction();
+
+//     return createdOrder;
+//   } catch (error) {
+//     await session.abortTransaction();
+//     throw error;
+//   } finally {
+//     session.endSession();
+//   }
+// };
+
+
 const createOrder = async (order: TOrder) => {
   const session = await mongoose.startSession();
 
   try {
-    session.startTransaction();
+    await session.startTransaction();
 
     // Create order
     const [createdOrder] = await orderModel.create([order], {
@@ -35,10 +82,30 @@ const createOrder = async (order: TOrder) => {
       if (availableQty < item.quantity) {
         throw new Error(`Not enough stock for product: ${product.title}`);
       }
-      product.soldQuantity = (product.soldQuantity || 0) + item.quantity;
+
+      product.soldQuantity =
+        (product.soldQuantity || 0) + item.quantity;
 
       await product.save({ session });
     }
+
+    // Ensure createdOrder exists
+    if (!createdOrder) {
+      throw new Error('Failed to create order');
+    }
+
+    // Create payment
+    await Payment.create(
+      [
+        {
+          order: createdOrder._id,
+          transactionId: `TXN-${Date.now()}`,
+          status: PAYMENT_STATUS.UNPAID,
+          amount: (createdOrder as any).totalPrice,
+        },
+      ],
+      { session }
+    );
 
     await session.commitTransaction();
 
@@ -47,7 +114,7 @@ const createOrder = async (order: TOrder) => {
     await session.abortTransaction();
     throw error;
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };
 
