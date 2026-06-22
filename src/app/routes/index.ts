@@ -8,6 +8,7 @@ import { colorRoutes } from "../modules/color/color.route.js"
 import { brandRoutes } from "../modules/brand/brand.route.js"
 import { productRoutes } from "../modules/product/product.route.js"
 import { bannerRoutes } from "../modules/banner/banner.route.js"
+import { orderRoutes } from "../modules/order/order.route.js"
 
 
 export const router = Router()
@@ -48,6 +49,10 @@ const moduleRoutes = [
     {
         path: "/banner",
         route: bannerRoutes
+    },
+    {
+        path: "/order",
+        route: orderRoutes
     },
    
 ]
