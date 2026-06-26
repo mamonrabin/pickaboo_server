@@ -5,6 +5,10 @@ import AppError from '../../helpers/AppError.js';
 import { SSLService } from '../sslCommerz/sslCommerz.service.js';
 import { orderModel } from '../order/order.model.js';
 import { PAYMENT_STATUS } from './payment.interface.js';
+import { generatePdf } from '../../utils/invoice.js';
+import { sendEmail } from '../../utils/sendEmail.js';
+import { uploadBufferToCloudinary } from '../../config/cloudinary.config.js';
+// import { generatePdf } from '../../utils/invoice.js';
 
 const initPayment = async (orderId: string) => {
   const payment = await paymentModel.findOne({
@@ -71,6 +75,50 @@ const successPayment = async (query: Record<string, string>) => {
       },
       { session },
     );
+
+    // prepare invoice data
+    const orderDoc: any = await orderModel.findById(payment.order);
+
+    const invoiceData: any = {
+      transactionId: payment.transactionId as string,
+      orderDate: orderDoc?.createdAt || new Date(),
+      userName: orderDoc?.shippingAddress?.name || '',
+      phone: orderDoc?.shippingAddress?.phone || '',
+      productName: orderDoc?.items?.[0]?.name || '',
+      totalAmount: payment.amount || 0,
+    };
+
+    const pdfBuffer = await generatePdf(invoiceData);
+
+
+    const cloudinaryResult = await uploadBufferToCloudinary(pdfBuffer, "invoice")
+
+        if (!cloudinaryResult) {
+            throw new AppError(401, "Error uploading pdf")
+        }
+
+        await paymentModel.findByIdAndUpdate(payment._id, 
+          { invoiceUrl: cloudinaryResult.secure_url }, 
+          { runValidators: true, session })
+
+
+    const recipientEmail = orderDoc?.shippingAddress?.email || 'customer@gmail.com';
+
+    console.log("send email",recipientEmail)
+
+    await sendEmail({
+      to: recipientEmail,
+      subject: 'Your Order Invoice',
+      templateName: 'invoice',
+      templateData: invoiceData,
+      attachments: [
+        {
+          filename: 'invoice.pdf',
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    });
 
     await session.commitTransaction();
 
