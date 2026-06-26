@@ -9,6 +9,7 @@ import { brandRoutes } from "../modules/brand/brand.route.js"
 import { productRoutes } from "../modules/product/product.route.js"
 import { bannerRoutes } from "../modules/banner/banner.route.js"
 import { orderRoutes } from "../modules/order/order.route.js"
+import { PaymentRoutes } from "../modules/payment/payment.route.js"
 
 
 export const router = Router()
@@ -53,6 +54,10 @@ const moduleRoutes = [
     {
         path: "/order",
         route: orderRoutes
+    },
+    {
+        path: "/payment",
+        route: PaymentRoutes
     },
    
 ]
