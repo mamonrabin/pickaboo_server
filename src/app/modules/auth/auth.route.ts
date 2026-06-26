@@ -13,8 +13,8 @@ const router = Router();
 
 router.post('/login', authControllers.credentialsLogin);
 router.post('/logout', authControllers.logout);
-router.post('/reset-password', auth, authControllers.resetPassword);
 router.post('/forgot-password', authControllers.forgotPassword);
+router.post('/reset-password', auth, authControllers.resetPassword);
 router.post('/change-password', auth, authControllers.changePassword);
 
 router.get(

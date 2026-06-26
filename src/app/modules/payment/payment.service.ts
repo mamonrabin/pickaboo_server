@@ -86,60 +86,113 @@ const successPayment = async (query: Record<string, string>) => {
   }
 };
 
+
 const failPayment = async (query: Record<string, string>) => {
-  const transactionId = query.transactionId;
+  const session = await paymentModel.startSession();
 
-  if (!transactionId) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'transactionId is required');
-  }
+  try {
+    session.startTransaction();
 
-  await paymentModel.findOneAndUpdate(
-    {
-      transactionId,
-    },
-    {
-      status: PAYMENT_STATUS.FAILED,
-    },
-  );
+    const { transactionId } = query;
 
-  const payment = await paymentModel.findOne({
-    transactionId,
-  });
 
-  if (payment) {
-    await orderModel.findByIdAndUpdate(payment.order, {
-      paymentStatus: 'FAILED',
-      status: 'CANCELLED',
-    });
-  }
-
-  return {
-    success: false,
-  };
-};
-
-const cancelPayment = async (
-  query: Record<string, string>
-) => {
-  const transactionId = query.transactionId;
-
-  if (!transactionId) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'transactionId is required');
-  }
-
-  await paymentModel.findOneAndUpdate(
-    {
-      transactionId,
-    },
-    {
-      status: PAYMENT_STATUS.CANCELLED,
+    if (!transactionId) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'transactionId is required');
     }
-  );
 
-  return {
-    success: true,
-  };
+    const payment = await paymentModel.findOne({
+      transactionId,
+    });
+
+
+    if (!payment) {
+      throw new Error('Payment not found');
+    }
+
+    await SSLService.validatePayment(query);
+
+    payment.status = PAYMENT_STATUS.FAILED;
+
+    await payment.save({ session });
+
+    await orderModel.findByIdAndUpdate(
+      payment.order,
+      {
+        paymentStatus: 'FAILED',
+        status: 'FAILED',
+      },
+      { session },
+    );
+
+    await session.commitTransaction();
+
+    return {
+      success: true,
+      message: 'Payment failed',
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    await session.endSession();
+  }
 };
+
+
+const cancelPayment = async (query: Record<string, string>) => {
+  const session = await paymentModel.startSession();
+
+  try {
+    session.startTransaction();
+
+    const { transactionId } = query;
+
+
+    if (!transactionId) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'transactionId is required');
+    }
+
+    const payment = await paymentModel.findOne({
+      transactionId,
+    });
+
+
+    if (!payment) {
+      throw new Error('Payment not found');
+    }
+
+    await SSLService.validatePayment(query);
+
+    payment.status = PAYMENT_STATUS.CANCELLED;
+
+    await payment.save({ session });
+
+    await orderModel.findByIdAndUpdate(
+      payment.order,
+      {
+        paymentStatus: 'CANCELLED',
+        status: 'CANCELLED',
+      },
+      { session },
+    );
+
+    await session.commitTransaction();
+
+    return {
+      success: true,
+      message: 'Payment cancelled',
+    };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    await session.endSession();
+  }
+};
+
+
+
+
 
 export const paymentService = {
   initPayment,
