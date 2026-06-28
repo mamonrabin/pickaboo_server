@@ -11,6 +11,7 @@ import { bannerRoutes } from "../modules/banner/banner.route.js"
 import { orderRoutes } from "../modules/order/order.route.js"
 import { PaymentRoutes } from "../modules/payment/payment.route.js"
 import { OtpRoutes } from "../modules/otp/otp.route.js"
+import { StatsRoutes } from "../modules/stats/stats.route.js"
 
 
 export const router = Router()
@@ -63,6 +64,10 @@ const moduleRoutes = [
     {
         path: "/otp",
         route: OtpRoutes
+    },
+    {
+        path: "/stats",
+        route: StatsRoutes
     },
    
 ]
