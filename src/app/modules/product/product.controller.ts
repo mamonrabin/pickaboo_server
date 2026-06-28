@@ -105,15 +105,15 @@ const updateSingleProduct = async (
     };
 
     // Handle updated images if any are uploaded
-    const thumbnailImage = files?.thumbal_image?.[0]?.filename;
-    const backviewImage = files?.backview_image?.[0]?.filename;
+    const thumbnailImage = files?.backviewImage?.[0]?.filename;
+    const backviewImage = files?.backviewImage?.[0]?.filename;
     const images =
       files?.images?.map((file) => `/uploads/${file.filename}`) || [];
 
     const updatedProduct = {
       ...updateData,
-      ...(thumbnailImage && { thumbal_image: `/uploads/${thumbnailImage}` }),
-      ...(backviewImage && { backview_image: `/uploads/${backviewImage}` }),
+      ...(thumbnailImage && { backviewImage: `/uploads/${thumbnailImage}` }),
+      ...(backviewImage && { backviewImage: `/uploads/${backviewImage}` }),
       ...(images.length > 0 && { images }),
     };
 
