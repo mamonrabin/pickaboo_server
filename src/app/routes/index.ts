@@ -14,6 +14,7 @@ import { OtpRoutes } from "../modules/otp/otp.route.js"
 import { StatsRoutes } from "../modules/stats/stats.route.js"
 import { aboutRoutes } from "../modules/about/about.route.js"
 import { policyRoutes } from "../modules/policy/policy.route.js"
+import { socialIconRoutes } from "../modules/social/social.route.js"
 
 
 export const router = Router()
@@ -78,6 +79,10 @@ const moduleRoutes = [
     {
         path: "/policy",
         route: policyRoutes
+    },
+    {
+        path: "/socialIcon",
+        route: socialIconRoutes
     },
    
 ]
