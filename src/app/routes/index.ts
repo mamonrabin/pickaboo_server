@@ -13,6 +13,7 @@ import { PaymentRoutes } from "../modules/payment/payment.route.js"
 import { OtpRoutes } from "../modules/otp/otp.route.js"
 import { StatsRoutes } from "../modules/stats/stats.route.js"
 import { aboutRoutes } from "../modules/about/about.route.js"
+import { policyRoutes } from "../modules/policy/policy.route.js"
 
 
 export const router = Router()
@@ -73,6 +74,10 @@ const moduleRoutes = [
     {
         path: "/about",
         route: aboutRoutes
+    },
+    {
+        path: "/policy",
+        route: policyRoutes
     },
    
 ]
