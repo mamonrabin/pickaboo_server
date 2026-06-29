@@ -9,6 +9,7 @@ const logoSchema = new Schema<TLogo>(
     description: { type: String },
     address: { type: String },
     phone: { type: String },
+    whatsapp: { type: String },
     email: { type: String },
    
     
