@@ -18,6 +18,8 @@ import { socialIconRoutes } from "../modules/social/social.route.js"
 import { logoRoutes } from "../modules/logo/logo.route.js"
 import { wishlistRoutes } from "../modules/wishlist/wishlist.route.js"
 import { contactRoutes } from "../modules/contact/contact.route.js"
+import { campaignRoutes } from "../modules/campaign/campaign.route.js"
+import { couponRoutes } from "../modules/coupon/coupon.route.js"
 
 
 export const router = Router()
@@ -98,6 +100,14 @@ const moduleRoutes = [
     {
         path: "/contact",
         route: contactRoutes
+    },
+    {
+        path: "/coupon",
+        route: couponRoutes
+    },
+    {
+        path: "/campaign",
+        route: campaignRoutes
     },
    
 ]
