@@ -53,7 +53,7 @@ const productSchema = new Schema<TProduct>(
 
     labels: {
       type: String,
-      enum: ["New", "Trending", "Limited Stock", "Sale", "Featured"],
+      enum: ["New", "Trending", "Limited Stock", "Featured","Best Sellers"],
     },
 
     tags: { type: [String], default: [] },

@@ -5,6 +5,7 @@ import httpStatus from 'http-status-codes';
 import { catchAsync } from '../../utils/catchAsync.js';
 import { productService } from './product.service.js';
 import { sendResponse } from '../../utils/sendResponse.js';
+import type { ProductLabel } from './product.interface.js';
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const files = req.files as any;
@@ -62,6 +63,104 @@ const getReletiveProduct = catchAsync(
     });
   },
 );
+const getDiscountProducts = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const limit = req.query.limit ? Number(req.query.limit) : 8;
+
+    const result = await productService.getDiscountProducts(limit);
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'get discount products successfully',
+      data: result,
+    });
+  },
+);
+const getNewArrivalProducts = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const limit = req.query.limit ? Number(req.query.limit) : 8;
+
+    const result = await productService.getNewArrivalProducts(limit);
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'get new arrival products successfully',
+      data: result,
+    });
+  },
+);
+
+const getProductsByCategory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const result = await productService.getProductsByCategory(id as string);
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get products by category successfully',
+      data: result,
+    });
+  },
+);
+
+const getProductsBySubCategory = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const result = await productService.getProductsBySubCategory(id as string);
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get products by sub-category successfully',
+      data: result,
+    });
+  },
+);
+
+const getProductsByBrand = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const result = await productService.getProductsByBrand(id as string);
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get products by brand successfully',
+      data: result,
+    });
+  },
+);
+
+const getProductsByLabels = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { label } = req.params;
+    const result = await productService.getProductsByLabels( label as ProductLabel);
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get products by labels successfully',
+      data: result,
+    });
+  },
+);
+
+const getBestSellingProducts = catchAsync(async (req, res) => {
+  const limit = Number(req.query.limit) || 8;
+
+  const result = await productService.getBestSellingProducts(limit);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Best selling products retrieved successfully',
+    data: result,
+  });
+});
+
 
 const getSingleProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -76,6 +175,7 @@ const getSingleProduct = catchAsync(
     });
   },
 );
+
 
 const getSingleProductBySlug = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -154,6 +254,13 @@ export const productController = {
   createProduct,
   getAllProduct,
   getReletiveProduct,
+  getDiscountProducts,
+  getNewArrivalProducts,
+  getProductsByCategory,
+  getProductsBySubCategory,
+  getProductsByBrand,
+  getProductsByLabels,
+  getBestSellingProducts,
   getSingleProduct,
   getSingleProductBySlug,
   updateSingleProduct,

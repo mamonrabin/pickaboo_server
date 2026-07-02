@@ -1,5 +1,5 @@
 import { productModel } from './product.model.js';
-import type { TProduct } from './product.interface.js';
+import type { ProductLabel, TProduct } from './product.interface.js';
 import { QueryBuilder } from '../../utils/QueryBuilder.js';
 import { productSearchableFields } from './product.constant.js';
 
@@ -69,6 +69,96 @@ const getRelatedProducts = async (productId: string, limit = 8) => {
 
   return relatedProducts;
 };
+const getDiscountProducts = async (limit = 8) => {
+  const discountProducts = await productModel
+    .find({
+      discount: { $gt: 0 },
+      stock_status: 'in_stock',
+    })
+    .populate('category', 'categoryName')
+    .populate('subCategory', 'subCategoryName')
+    .populate('brand', 'title')
+    .sort({ discount: -1, createdAt: -1 })
+    .limit(limit);
+
+  return discountProducts;
+};
+
+const getProductsByCategory = async (categoryId: string) => {
+  const result = await productModel
+    .find({ category: categoryId })
+    .populate('category', 'categoryName')
+    .populate('subCategory', 'subCategoryName')
+    .populate('brand', 'title')
+    .populate('colors', 'title code')
+    .populate('sizes', 'title')
+    .sort({ createdAt: -1 });
+
+  return result;
+};
+const getProductsBySubCategory = async (subCategoryId: string) => {
+  const result = await productModel
+    .find({ subCategory: subCategoryId })
+    .populate('category', 'categoryName')
+    .populate('subCategory', 'subCategoryName')
+    .populate('brand', 'title')
+    .populate('colors', 'title code')
+    .populate('sizes', 'title')
+    .sort({ createdAt: -1 });
+
+  return result;
+};
+
+const getProductsByBrand = async (brandId: string) => {
+  const result = await productModel
+    .find({ brand: brandId })
+    .populate('category', 'categoryName')
+    .populate('subCategory', 'subCategoryName')
+    .populate('brand', 'title')
+    .populate('colors', 'title code')
+    .populate('sizes', 'title')
+    .sort({ createdAt: -1 });
+
+  return result;
+};
+
+const getProductsByLabels = async (label: ProductLabel, limit = 8) => {
+  const result = await productModel
+    .find({ labels: label })
+    .populate('category', 'categoryName')
+    .populate('subCategory', 'subCategoryName')
+    .populate('brand', 'title')
+    .sort({ createdAt: -1 })
+    .limit(limit);
+
+  return result;
+};
+
+const getBestSellingProducts = async (limit = 8) => {
+  const result = await productModel
+    .find({
+      soldQuantity: { $gt: 0 },
+    })
+    .populate('category', 'categoryName')
+    .populate('subCategory', 'subCategoryName')
+    .populate('brand', 'title')
+    .sort({ soldQuantity: -1, createdAt: -1 })
+    .limit(limit);
+
+  return result;
+};
+
+const getNewArrivalProducts = async (limit = 8) => {
+  const result = await productModel
+    .find()
+    .populate('category', 'categoryName')
+    .populate('subCategory', 'subCategoryName')
+    .populate('brand', 'title')
+    .sort({ createdAt: -1 })
+    .limit(limit);
+
+  return result;
+};
 
 const getSingleProduct = async (id: string) => {
   const result = await productModel.findById(id);
@@ -96,6 +186,13 @@ export const productService = {
   createProduct,
   getAllProduct,
   getRelatedProducts,
+  getDiscountProducts,
+  getNewArrivalProducts,
+  getProductsByCategory,
+  getProductsBySubCategory,
+  getProductsByBrand,
+  getProductsByLabels,
+  getBestSellingProducts,
   getSingleProduct,
   getSingleProductBySlug,
   updateSingleProduct,

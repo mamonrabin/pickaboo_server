@@ -15,7 +15,14 @@ router.post(
 );
 
 router.get('/', productController.getAllProduct);
-router.get('/related/:id', productController.getReletiveProduct);
+router.get('/related-products/:id', productController.getReletiveProduct);
+router.get('/dicount-products', productController.getDiscountProducts);
+router.get('/new-products', productController.getNewArrivalProducts);
+router.get('/category/:id', productController.getProductsByCategory);
+router.get('/sub-category/:id', productController.getProductsBySubCategory);
+router.get('/brand/:id', productController.getProductsByBrand);
+router.get('/labels/:label', productController.getProductsByLabels);
+router.get('/best-selling', productController.getBestSellingProducts);
 router.get('/:id', productController.getSingleProduct);
 router.get('/productSlug/:slug', productController.getSingleProductBySlug);
 router.put(
