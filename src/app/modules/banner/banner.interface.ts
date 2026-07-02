@@ -1,6 +1,6 @@
 import type { ObjectId } from 'mongoose';
 
-export type BannerType = 'photo' | 'photowithdescription';
+export type BannerType = 'photo' | 'photowithdescription' | 'offerbanner' | "productbanner";
 
 export type TBanner = {
   title?: string;

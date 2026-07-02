@@ -11,7 +11,7 @@ const bannerSchema = new Schema<TBanner>(
 
     type: {
       type: String,
-      enum: ['photo', 'photowithdescription'],
+      enum: ['photo', 'photowithdescription','offerbanner', 'productbanner'],
       default: 'photo',
     },
   },
