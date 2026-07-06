@@ -14,6 +14,13 @@ export type TSpecification = {
   value: string;
 };
 
+export type TInventory = {
+  color?: string;
+  colorName?: string;
+  size?: string;
+  quantity: number;
+};
+
 export type TProduct = {
   title: string;
   slug?: string;
@@ -27,10 +34,10 @@ export type TProduct = {
 
   category: Types.ObjectId;
   subCategory?: Types.ObjectId;
-  brand: Types.ObjectId;
+  brand?: Types.ObjectId;
 
-  colors: Types.ObjectId[];
-  sizes: Types.ObjectId[];
+  // colors?: Types.ObjectId[];
+  // sizes?: Types.ObjectId[];
 
   thumbnailImage: string;
   backviewImage?: string;
@@ -42,6 +49,9 @@ export type TProduct = {
   barcode?: string;
 
   stock_status?: StockStatus;
+
+  inventoryType?: string;
+  inventories?: TInventory[];
 
   video_url?: string;
 

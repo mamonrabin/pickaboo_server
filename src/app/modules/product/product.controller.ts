@@ -17,6 +17,10 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 
   const images = files?.images?.map((f: any) => `/uploads/${f.filename}`) || [];
 
+  if (req.body.inventories) {
+    productData.inventories = JSON.parse(req.body.inventories);
+  }
+
   const result = await productService.createProduct({
     ...productData,
     thumbnailImage: thumbnail ? `/uploads/${thumbnail}` : '',
@@ -137,7 +141,9 @@ const getProductsByBrand = catchAsync(
 const getProductsByLabels = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { label } = req.params;
-    const result = await productService.getProductsByLabels( label as ProductLabel);
+    const result = await productService.getProductsByLabels(
+      label as ProductLabel,
+    );
 
     return sendResponse(res, {
       success: true,
@@ -161,7 +167,6 @@ const getBestSellingProducts = catchAsync(async (req, res) => {
   });
 });
 
-
 const getSingleProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -175,7 +180,6 @@ const getSingleProduct = catchAsync(
     });
   },
 );
-
 
 const getSingleProductBySlug = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

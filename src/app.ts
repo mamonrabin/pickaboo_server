@@ -12,6 +12,7 @@ import notFound from './app/middlewares/notFound.js';
 import config from './app/config/index.js';
 import { router } from './app/routes/index.js';
 import './app/config/passport.js';
+import path from 'path';
 const app: Application = express();
 
 app.use(
@@ -34,6 +35,11 @@ app.use(
     origin: config.frontend_url,
     credentials: true,
   }),
+);
+
+app.use(
+  "/api/v1/uploads",
+  express.static(path.join(process.cwd(), "uploads"))
 );
 
 app.use('/api/v1', router);

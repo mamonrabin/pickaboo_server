@@ -31,8 +31,8 @@ const productSchema = new Schema<TProduct>(
     subCategory: { type: Schema.Types.ObjectId, ref: "subcategory", required: true, index: true },
     brand: { type: Schema.Types.ObjectId, ref: "brand", required: true, index: true },
 
-    colors: [{ type: Schema.Types.ObjectId, ref: "color" }],
-    sizes: [{ type: Schema.Types.ObjectId, ref: "size" }],
+    // colors: [{ type: Schema.Types.ObjectId, ref: "color" }],
+    // sizes: [{ type: Schema.Types.ObjectId, ref: "size" }],
 
     thumbnailImage: { type: String, required: true },
     backviewImage: String,
@@ -41,7 +41,19 @@ const productSchema = new Schema<TProduct>(
     freeShipping: { type: Boolean, default: false },
 
     sku: { type: String, unique: true, sparse: true },
-    barcode: String,
+
+    barcode: { type: String },
+
+    inventoryType: { type: String },
+
+    inventories: [
+      {
+        color: String,
+        colorName: String,
+        size: String,
+        quantity: { type: Number, default: 0 },
+      },
+    ],
 
     stock_status: {
       type: String,
@@ -82,6 +94,14 @@ productSchema.virtual("availableQuantity").get(function () {
 
 productSchema.pre("save", function () {
   const product = this as HydratedDocument<TProduct>;
+
+  /* ---------- Auto Quantity from Inventory ---------- */
+  if (product.inventories?.length) {
+    product.quantity = product.inventories.reduce(
+      (total, item) => total + (item.quantity || 0),
+      0,
+    );
+  }
 
   try {
     // SLUG (only when needed)
