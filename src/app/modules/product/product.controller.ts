@@ -21,6 +21,19 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     productData.inventories = JSON.parse(req.body.inventories);
   }
 
+  if (productData.specifications) {
+    productData.specifications = JSON.parse(productData.specifications);
+  }
+
+  // Convert boolean
+  if (productData.freeShipping !== undefined) {
+    productData.freeShipping = productData.freeShipping === 'true';
+  }
+
+  if (productData.tags) {
+  productData.tags = JSON.parse(productData.tags);
+}
+
   const result = await productService.createProduct({
     ...productData,
     thumbnailImage: thumbnail ? `/uploads/${thumbnail}` : '',

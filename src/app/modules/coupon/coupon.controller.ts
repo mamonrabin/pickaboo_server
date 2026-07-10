@@ -81,10 +81,9 @@ const updateSingleCoupon = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const updateCoupon = req.body;
 
-  const result = await couponService.updateSingleCoupon(
-    id as string,
-    updateCoupon,
-  );
+  const result = await couponService.updateSingleCoupon(id as string, {
+    ...updateCoupon,
+  });
 
   return sendResponse(res, {
     success: true,

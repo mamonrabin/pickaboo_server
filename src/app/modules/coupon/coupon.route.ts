@@ -8,7 +8,7 @@ router.get("/", couponController.getAllCoupon);
 router.get("/pagination", couponController.getAllCouponByFilter);
 router.get("/:id", couponController.getSingleCoupon);
 router.get("/apply/:code", couponController.getCouponByCode);
-router.patch("/:id", couponController.updateSingleCoupon);
+router.put("/:id", couponController.updateSingleCoupon);
 router.delete("/:id", couponController.deleteSingleCoupon);
 
 export const couponRoutes = router;

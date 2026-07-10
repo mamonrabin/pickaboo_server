@@ -1,5 +1,4 @@
-import type { Types } from "mongoose";
-
+import type { Types } from 'mongoose';
 
 export type StockStatus = 'in_stock' | 'out_of_stock' | 'pre_order';
 export type ProductLabel =
@@ -13,6 +12,7 @@ export type TSpecification = {
   key: string;
   value: string;
 };
+export type TDiscountType = 'flat' | 'percentage';
 
 export type TInventory = {
   color?: string;
@@ -24,10 +24,11 @@ export type TInventory = {
 export type TProduct = {
   title: string;
   slug?: string;
-  quantity: number;
+  quantity?: number;
   mrpPrice: number;
   price?: number;
   discount?: number;
+  discountType?: TDiscountType;
   soldQuantity?: number;
 
   description: string;
@@ -55,7 +56,7 @@ export type TProduct = {
 
   video_url?: string;
 
-  labels?: ProductLabel;
+  label?: ProductLabel;
 
   tags?: string[];
 
@@ -66,7 +67,6 @@ export type TProduct = {
 
   metaTitle?: string;
   metaDescription?: string;
-  metaKeywords?: string[];
 
   warranty?: string;
 };

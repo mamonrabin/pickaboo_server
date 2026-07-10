@@ -1,40 +1,48 @@
-import { QueryBuilder } from "../../utils/QueryBuilder.js";
-import { couponSearchableFields } from "./coupon.constant.js";
-import type { TCoupon } from "./coupon.interface.js";
-import { couponModel } from "./coupon.model.js";
-
-
-
-
+import { QueryBuilder } from '../../utils/QueryBuilder.js';
+import { couponSearchableFields } from './coupon.constant.js';
+import type { TCoupon } from './coupon.interface.js';
+import { couponModel } from './coupon.model.js';
 
 const createCoupon = async (coupon: TCoupon) => {
   const result = await couponModel.create(coupon);
   return result;
 };
 const getAllCoupon = async () => {
-  const result = await couponModel.find();
+  const result = await couponModel
+    .find()
+    .populate('categoryID subCategoryID brandID')
+    .populate('categoryID', 'categoryName')
+    .populate('subCategoryID', 'subcategoryName')
+    .populate('brandID', 'title');
   return result;
 };
 
 const getAllCouponByFilter = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(
+    couponModel
+      .find()
+      .populate('categoryID subCategoryID brandID')
+      .populate('categoryID', 'categoryName')
+      .populate('subCategoryID', 'subcategoryName')
+      .populate('brandID', 'title'),
+    query,
+  );
+  const couponesData = queryBuilder
+    .filter()
+    .search(couponSearchableFields)
+    .sort()
+    .fields()
+    .paginate();
 
-    const queryBuilder = new QueryBuilder(couponModel.find(), query)
-    const categoriesData = queryBuilder
-        .filter()
-        .search(couponSearchableFields)
-        .sort()
-        .fields()
-        .paginate();
+  const [data, meta] = await Promise.all([
+    couponesData.build(),
+    queryBuilder.getMeta(),
+  ]);
 
-    const [data, meta] = await Promise.all([
-        categoriesData.build(),
-        queryBuilder.getMeta()
-    ])
-
-    return {
-        data,
-        meta
-    }
+  return {
+    data,
+    meta,
+  };
 };
 
 const getSingleCoupon = async (id: string) => {
@@ -50,10 +58,7 @@ const getCouponByCode = async (code: string) => {
   return result;
 };
 
-const updateSingleCoupon = async (
-  id: string,
-  updateCoupon: TCoupon,
-) => {
+const updateSingleCoupon = async (id: string, updateCoupon: TCoupon) => {
   const result = await couponModel.findByIdAndUpdate(id, updateCoupon, {
     new: true,
   });
@@ -72,7 +77,7 @@ const increaseCouponUsed = async (id: string) => {
   const result = await couponModel.findByIdAndUpdate(
     id,
     { $inc: { used: 1 } },
-    { new: true }
+    { new: true },
   );
   return result;
 };
@@ -85,5 +90,5 @@ export const couponService = {
   getCouponByCode,
   updateSingleCoupon,
   deleteSingleCoupon,
-  increaseCouponUsed 
+  increaseCouponUsed,
 };

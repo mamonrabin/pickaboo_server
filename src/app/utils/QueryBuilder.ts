@@ -100,6 +100,70 @@ export class QueryBuilder<T> {
       delete filter.maxPrice;
     }
 
+    // DATE FILTER
+    if (filter.dateFilter) {
+      const now = new Date();
+      let startDate: Date | null = null;
+      let endDate: Date | null = null;
+
+      switch (filter.dateFilter) {
+        case 'today':
+          startDate = new Date(now);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(now);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+
+        case 'tomorrow':
+          startDate = new Date(now);
+          startDate.setDate(startDate.getDate() + 1);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(startDate);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+
+        case 'this-week': {
+          // Monday as first day of week
+          startDate = new Date(now);
+          const day = startDate.getDay(); // 0 = Sunday
+          const diff = day === 0 ? -6 : 1 - day;
+          startDate.setDate(startDate.getDate() + diff);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(now);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+        }
+
+        case 'this-month':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(now);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+
+        case 'this-year':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(now);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+      }
+
+      if (startDate && endDate) {
+        itemFilter.createdAt = {
+          $gte: startDate,
+          $lte: endDate,
+        };
+      }
+
+      delete filter.dateFilter;
+    }
+
     this.filterQuery = {
       ...this.filterQuery,
       ...itemFilter,

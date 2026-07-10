@@ -1,14 +1,14 @@
-import { model, Schema, type HydratedDocument } from "mongoose";
-import type { TProduct } from "./product.interface.js";
-import { generateSlug } from "../../utils/slug.js";
-import { generateSku } from "../../utils/generateSku.js";
+import { model, Schema, type HydratedDocument } from 'mongoose';
+import type { TProduct } from './product.interface.js';
+import { generateSlug } from '../../utils/slug.js';
+import { generateSku } from '../../utils/generateSku.js';
 
 const specificationSchema = new Schema(
   {
-    key: { type: String, required: true, trim: true },
-    value: { type: String, required: true, trim: true },
+    key: { type: String, trim: true },
+    value: { type: String, trim: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const productSchema = new Schema<TProduct>(
@@ -17,9 +17,14 @@ const productSchema = new Schema<TProduct>(
 
     slug: { type: String, unique: true, lowercase: true },
 
-    quantity: { type: Number, required: true, min: 0 },
+    quantity: { type: Number },
     mrpPrice: { type: Number, required: true, min: 0 },
     discount: { type: Number, default: 0, min: 0, max: 100 },
+    discountType: {
+      type: String,
+      enum: ['flat', 'percentage'],
+      default: 'percentage',
+    },
 
     price: { type: Number, min: 0 },
 
@@ -27,9 +32,22 @@ const productSchema = new Schema<TProduct>(
 
     description: { type: String, required: true },
 
-    category: { type: Schema.Types.ObjectId, ref: "category", required: true, index: true },
-    subCategory: { type: Schema.Types.ObjectId, ref: "subcategory", required: true, index: true },
-    brand: { type: Schema.Types.ObjectId, ref: "brand", required: true, index: true },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: 'category',
+      required: true,
+      index: true,
+    },
+    subCategory: {
+      type: Schema.Types.ObjectId,
+      ref: 'subcategory',
+      index: true,
+    },
+    brand: {
+      type: Schema.Types.ObjectId,
+      ref: 'brand',
+      index: true,
+    },
 
     // colors: [{ type: Schema.Types.ObjectId, ref: "color" }],
     // sizes: [{ type: Schema.Types.ObjectId, ref: "size" }],
@@ -57,15 +75,15 @@ const productSchema = new Schema<TProduct>(
 
     stock_status: {
       type: String,
-      enum: ["in_stock", "out_of_stock", "pre_order"],
-      default: "in_stock",
+      enum: ['in_stock', 'out_of_stock', 'pre_order'],
+      default: 'in_stock',
     },
 
     video_url: String,
 
-    labels: {
+    label: {
       type: String,
-      enum: ["New", "Trending", "Limited Stock", "Featured","Best Sellers"],
+      enum: ['New', 'Trending', 'Limited Stock', 'Featured', 'Best Sellers'],
     },
 
     tags: { type: [String], default: [] },
@@ -77,7 +95,6 @@ const productSchema = new Schema<TProduct>(
 
     metaTitle: String,
     metaDescription: String,
-    metaKeywords: { type: [String], default: [] },
 
     warranty: String,
   },
@@ -85,14 +102,14 @@ const productSchema = new Schema<TProduct>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
-productSchema.virtual("availableQuantity").get(function () {
+productSchema.virtual('availableQuantity').get(function () {
   return Math.max((this.quantity || 0) - (this.soldQuantity || 0), 0);
 });
 
-productSchema.pre("save", function () {
+productSchema.pre('save', function () {
   const product = this as HydratedDocument<TProduct>;
 
   /* ---------- Auto Quantity from Inventory ---------- */
@@ -105,7 +122,7 @@ productSchema.pre("save", function () {
 
   try {
     // SLUG (only when needed)
-    if (product.isNew || product.isModified("title")) {
+    if (product.isNew || product.isModified('title')) {
       product.slug = generateSlug(product.title);
     }
 
@@ -113,24 +130,19 @@ productSchema.pre("save", function () {
     if (product.isNew && !product.sku) {
       product.sku = generateSku({
         title: product.title,
-        brandId: product.brand?.toString() || "",
-        prefix: "PRD",
+        brandId: product.brand?.toString() || '',
+        prefix: 'PRD',
       });
     }
 
     // PRICE CALCULATION
     const discount = product.discount || 0;
-    product.price =
-      product.mrpPrice - (product.mrpPrice * discount) / 100;
+    product.price = product.mrpPrice - (product.mrpPrice * discount) / 100;
 
     // STOCK STATUS
-    const available =
-      (product.quantity || 0) - (product.soldQuantity || 0);
+    const available = (product.quantity || 0) - (product.soldQuantity || 0);
 
-    product.stock_status =
-      available <= 0 ? "out_of_stock" : "in_stock";
-
-    ;
+    product.stock_status = available <= 0 ? 'out_of_stock' : 'in_stock';
   } catch (err) {
     console.log(err as Error);
   }
@@ -138,7 +150,7 @@ productSchema.pre("save", function () {
 
 productSchema.statics.sellProduct = async function (
   productId: string,
-  quantity: number
+  quantity: number,
 ) {
   return this.findByIdAndUpdate(
     productId,
@@ -148,15 +160,14 @@ productSchema.statics.sellProduct = async function (
         quantity: -quantity,
       },
     },
-    { new: true }
+    { new: true },
   );
 };
-
 
 productSchema.index({ category: 1, brand: 1 });
 productSchema.index({ price: 1 });
 productSchema.index({ averageRating: -1 });
 productSchema.index({ createdAt: -1 });
-productSchema.index({ title: "text", description: "text" });
+productSchema.index({ title: 'text', description: 'text' });
 
 export const productModel = model<TProduct>('product', productSchema);

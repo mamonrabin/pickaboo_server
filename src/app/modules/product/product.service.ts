@@ -12,15 +12,10 @@ const getAllProduct = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(
     productModel
       .find()
-      .populate('category subCategory brand sizes')
+      .populate('category subCategory brand')
       .populate('category', 'categoryName')
-      .populate('sizes', 'title')
-      .populate({
-        path: 'colors',
-        populate: {
-          path: 'size',
-        },
-      }),
+      .populate('subCategory', 'subcategoryName')
+      .populate('brand', 'title'),
     query,
   );
   const productData = queryBuilder
@@ -90,8 +85,6 @@ const getProductsByCategory = async (categoryId: string) => {
     .populate('category', 'categoryName')
     .populate('subCategory', 'subCategoryName')
     .populate('brand', 'title')
-    .populate('colors', 'title code')
-    .populate('sizes', 'title')
     .sort({ createdAt: -1 });
 
   return result;
@@ -102,8 +95,6 @@ const getProductsBySubCategory = async (subCategoryId: string) => {
     .populate('category', 'categoryName')
     .populate('subCategory', 'subCategoryName')
     .populate('brand', 'title')
-    .populate('colors', 'title code')
-    .populate('sizes', 'title')
     .sort({ createdAt: -1 });
 
   return result;
@@ -115,8 +106,7 @@ const getProductsByBrand = async (brandId: string) => {
     .populate('category', 'categoryName')
     .populate('subCategory', 'subCategoryName')
     .populate('brand', 'title')
-    .populate('colors', 'title code')
-    .populate('sizes', 'title')
+
     .sort({ createdAt: -1 });
 
   return result;

@@ -12,7 +12,7 @@ router.post(
 );
 router.get('/', campaignController.getAllCampaign);
 router.get('/:id', campaignController.getSingleCampaign);
-router.put('/:id', campaignController.updateSingleCampaign);
+router.patch('/:id', upload.single('image'), campaignController.updateSingleCampaign);
 router.delete('/:id', campaignController.deleteSingleCampaign);
 
 export const campaignRoutes = router;

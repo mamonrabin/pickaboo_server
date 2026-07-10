@@ -3,9 +3,9 @@ import type { TCampaign } from './campaign.interface.js';
 
 const campaignSchema = new Schema<TCampaign>(
   {
-    title: { type: String },
-    image: { type: String, default: '' },
-    couponId: { type: Schema.Types.ObjectId, ref: 'coupon' },
+    title: { type: String, required:true },
+    image: { type: String},
+    couponId: { type: Schema.Types.ObjectId, ref: 'coupon',required:true },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   },
   {

@@ -67,7 +67,7 @@ const couponSchema = new Schema<TCoupon>(
     },
     subCategoryID: {
       type: Schema.Types.ObjectId,
-      ref: 'subCategory',
+      ref: 'subcategory',
     },
     brandID: {
       type: Schema.Types.ObjectId,
