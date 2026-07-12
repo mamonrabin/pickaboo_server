@@ -33,6 +33,7 @@ const updateSinglePolicy = async (
 
 
 
+
 const deleteSinglePolicy = async (id: string) => {
   const result = await policyModel.findByIdAndDelete(id);
   return result;

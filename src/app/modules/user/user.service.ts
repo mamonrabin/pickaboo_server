@@ -41,7 +41,8 @@ const getAllUsers = async (query: Record<string, string>) => {
         .search(userSearchableFields)
         .sort()
         .fields()
-        .paginate();
+        .paginate()
+         .apply();
 
     const [data, meta] = await Promise.all([
         usersData.build(),

@@ -81,22 +81,40 @@ const deleteSingleUser = catchAsync(
   },
 );
 
-const updateSingleUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    const updateUser = req.body;
-    const result = await userServices.updateSingleUser(
-      id as string,
-      updateUser,
-    );
-    sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: 'User Updated Successfully',
-      data: result,
-    });
-  },
-);
+// const updateSingleUser = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { id } = req.params;
+//     const updateUser = req.body;
+//     const result = await userServices.updateSingleUser(
+//       id as string,
+//       updateUser,
+//     );
+//     sendResponse(res, {
+//       success: true,
+//       statusCode: httpStatus.OK,
+//       message: 'User Updated Successfully',
+//       data: result,
+//     });
+//   },
+// );
+
+const updateSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  console.log("BODY:", req.body);
+
+  const result = await userServices.updateSingleUser(
+    req.params.id as string,
+    req.body
+  );
+
+  console.log("RESULT:", result);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "User Updated Successfully",
+    data: result,
+  });
+});
 
 export const userControllers = {
   createUser,

@@ -50,18 +50,13 @@ const getAllPolicyByType = catchAsync(async (req, res) => {
   });
 });
 
-const updateSinglePolicy = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const updatePolicy = req.body;
+const updateSinglePolicy = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-  const imageUrl = req.file
-    ? `/uploads/${req.file.filename}`
-    : updatePolicy.image;
 
-  const result = await policyService.updateSinglePolicy(id as string, {
-    ...updatePolicy,
-    image: imageUrl,
-  });
+  const result = await policyService.updateSinglePolicy(
+    req.params.id as string,
+    req.body
+  );
 
   return sendResponse(res, {
     success: true,
@@ -70,6 +65,8 @@ const updateSinglePolicy = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+
 
 const deleteSinglePolicy = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -90,5 +87,5 @@ export const policyController = {
   getAllPolicy,
   updateSinglePolicy,
   deleteSinglePolicy,
-  getAllPolicyByType
+  getAllPolicyByType,
 };
