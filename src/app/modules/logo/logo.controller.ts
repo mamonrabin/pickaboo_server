@@ -57,8 +57,8 @@ const updateSingleLogo = catchAsync(async (req: Request, res: Response) => {
 
   const result = await logoService.updateSingleLogo(id as string, {
     ...updateLogo,
-    ...(headerLogo && { backviewImage: `/uploads/${headerLogo}` }),
-    ...(footerLogo && { backviewImage: `/uploads/${footerLogo}` }),
+    ...(headerLogo && { headerLogo: `/uploads/${headerLogo}` }),
+    ...(footerLogo && { footerLogo: `/uploads/${footerLogo}` }),
   });
 
   return sendResponse(res, {

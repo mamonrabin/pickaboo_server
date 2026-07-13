@@ -6,7 +6,7 @@ const createLogo = async (logo: TLogo) => {
   return result;
 };
 const getAllLogo = async () => {
-  const result = await logoModel.find();
+  const result = await logoModel.find().sort({ createdAt: -1 });
   return result;
 };
 

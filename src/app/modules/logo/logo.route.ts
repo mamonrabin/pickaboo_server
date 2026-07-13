@@ -16,7 +16,7 @@ router.post(
 
 router.get('/', logoController.getAllLogo);
 
-router.put(
+router.patch(
   '/:id',
   upload.fields([
     { name: 'headerLogo', maxCount: 1 },

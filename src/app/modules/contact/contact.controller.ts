@@ -6,7 +6,6 @@ import { sendResponse } from '../../utils/sendResponse.js';
 import httpStatus from 'http-status-codes';
 import { contactService } from './contact.service.js';
 
-
 const createContact = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const contact = req.body;
@@ -24,7 +23,10 @@ const createContact = catchAsync(
 
 const getAllContact = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await contactService.getAllContact();
+    const query = req.query;
+    const result = await contactService.getAllContact(
+      query as Record<string, string>,
+    );
 
     return sendResponse(res, {
       success: true,
@@ -34,6 +36,7 @@ const getAllContact = catchAsync(
     });
   },
 );
+
 
 
 const getSingleContact = catchAsync(
@@ -49,7 +52,6 @@ const getSingleContact = catchAsync(
     });
   },
 );
-
 
 const deleteSingleContact = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
