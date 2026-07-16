@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
-import path from "path";
+import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config({
-  path: path.join(process.cwd(), ".env"),
+  path: path.join(process.cwd(), '.env'),
 });
 
 export default {
@@ -45,6 +45,10 @@ export default {
   cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
+
+  steadfast_base_url: process.env.STEADFAST_BASE_URL,
+  steadfast_api_key: process.env.STEADFAST_API_KEY,
+  steadfast_secret_key: process.env.STEADFAST_SECRET_KEY,
 
   smtp_host: process.env.SMTP_HOST,
   smtp_port: process.env.SMTP_PORT,

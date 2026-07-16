@@ -2,7 +2,6 @@ import { model, Schema } from 'mongoose';
 import type { TOrder } from './order.interface.js';
 import orderIdGenerate from '../../utils/orderIdGenerate.js';
 
-
 const orderSchema = new Schema<TOrder>(
   {
     orderId: {
@@ -21,8 +20,6 @@ const orderSchema = new Schema<TOrder>(
       ref: 'payment',
       index: true,
     },
-
-
 
     products: [
       {
@@ -84,7 +81,7 @@ const orderSchema = new Schema<TOrder>(
 
     paymentMethod: {
       type: String,
-      enum: ['COD', 'CARD', 'STRIPE', 'BKASH', 'NAGAD'],
+      enum: ['COD', 'CARD', 'BKASH', 'NAGAD'],
       required: true,
     },
 
@@ -110,6 +107,43 @@ const orderSchema = new Schema<TOrder>(
       default: 'PENDING',
     },
 
+    courier: {
+      provider: {
+        type: String,
+        enum: ['NONE', 'STEADFAST', 'PATHAO', 'REDX'],
+        default: 'NONE',
+      },
+      consignmentId: {
+        type: String,
+        default: '',
+      },
+      trackingCode: {
+        type: String,
+        default: '',
+      },
+      status: {
+        type: String,
+        enum: [
+          'PENDING',
+          'PICKUP_REQUESTED',
+          'PICKED_UP',
+          'IN_HUB',
+          'IN_TRANSIT',
+          'OUT_FOR_DELIVERY',
+          'DELIVERED',
+          'RETURNED',
+          'CANCELLED',
+        ],
+        default: 'PENDING',
+      },
+      createdAt: Date,
+      updatedAt: Date,
+      response: {
+        type: Schema.Types.Mixed,
+        default: {},
+      },
+    },
+
     note: {
       type: String,
     },
@@ -119,13 +153,11 @@ const orderSchema = new Schema<TOrder>(
   },
 );
 
-
 orderSchema.pre('save', function () {
   if (!this.orderId) {
     this.orderId = orderIdGenerate('ORD-');
   }
 });
-
 
 orderSchema.index({ userRef: 1, createdAt: -1 });
 orderSchema.index({ payment: 1 });

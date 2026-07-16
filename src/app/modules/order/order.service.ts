@@ -9,8 +9,6 @@ import { PAYMENT_STATUS } from '../payment/payment.interface.js';
 import { SSLService } from '../sslCommerz/sslCommerz.service.js';
 import { paymentModel } from '../payment/payment.model.js';
 
-
-
 const createOrder = async (order: TOrder) => {
   const session = await mongoose.startSession();
 
@@ -39,8 +37,7 @@ const createOrder = async (order: TOrder) => {
         throw new Error(`Not enough stock for product: ${product.title}`);
       }
 
-      product.soldQuantity =
-        (product.soldQuantity || 0) + item.quantity;
+      product.soldQuantity = (product.soldQuantity || 0) + item.quantity;
 
       await product.save({ session });
     }
@@ -60,11 +57,11 @@ const createOrder = async (order: TOrder) => {
           amount: (createdOrder as any).totalPrice,
         },
       ],
-      { session }
+      { session },
     );
 
-     const sslPayload: any = {
-      address:order?.shippingAddress?.address,
+    const sslPayload: any = {
+      address: order?.shippingAddress?.address,
       email: order?.shippingAddress?.email,
       phoneNumber: order?.shippingAddress?.email,
       name: order?.shippingAddress?.name,
@@ -72,8 +69,7 @@ const createOrder = async (order: TOrder) => {
       transactionId: payment?.transactionId,
     };
 
-
-    const sslPayment = await SSLService.sslPaymentInit(sslPayload)
+    const sslPayment = await SSLService.sslPaymentInit(sslPayload);
 
     await session.commitTransaction();
 
@@ -81,7 +77,7 @@ const createOrder = async (order: TOrder) => {
 
     return {
       paymentUrl: sslPayment.GatewayPageURL,
-      createdOrder
+      createdOrder,
     };
   } catch (error) {
     await session.abortTransaction();
@@ -92,16 +88,24 @@ const createOrder = async (order: TOrder) => {
 };
 
 const getAllOrder = async (query: Record<string, string>) => {
-  const queryBuilder = new QueryBuilder(orderModel.find(), query);
-  const colorData = queryBuilder
+  const queryBuilder = new QueryBuilder(
+    orderModel
+      .find()
+      .populate('userRef',"name email")
+      .populate('products.productRef', 'title')
+      .populate('couponRef', 'code discount'),
+    query,
+  );
+  const orderData = queryBuilder
     .filter()
     .search(orderSearchableFields)
     .sort()
     .fields()
-    .paginate();
+    .paginate()
+    .apply();
 
   const [data, meta] = await Promise.all([
-    colorData.build(),
+    orderData.build(),
     queryBuilder.getMeta(),
   ]);
 
@@ -111,13 +115,10 @@ const getAllOrder = async (query: Record<string, string>) => {
   };
 };
 
-
 const getSingleOrder = async (id: string) => {
   const result = await orderModel.findById(id);
   return result;
 };
-
-
 
 const updateSingleOrder = async (id: string, updateOrder: TOrder) => {
   const result = await orderModel.findByIdAndUpdate(id, updateOrder, {

@@ -11,9 +11,22 @@ export type TOrderStatus =
   | 'IN_REVIEW'
   | 'RETURNED';
 
-export type TPaymentMethod = 'COD' | 'CARD' | 'STRIPE' | 'BKASH' | 'NAGAD';
+export type TPaymentMethod = 'COD' | 'CARD' | 'BKASH' | 'NAGAD';
 
 export type TPaymentStatus = 'UNPAID' | 'PAID' | 'FAILED' | 'REFUNDED';
+
+export type TCourierProvider = 'NONE' | 'STEADFAST' | 'PATHAO' | 'REDX';
+
+export type TCourierStatus =
+  | 'PENDING'
+  | 'PICKUP_REQUESTED'
+  | 'PICKED_UP'
+  | 'IN_HUB'
+  | 'IN_TRANSIT'
+  | 'OUT_FOR_DELIVERY'
+  | 'DELIVERED'
+  | 'RETURNED'
+  | 'CANCELLED';
 
 export type TOrderProduct = {
   productRef: ObjectId;
@@ -35,10 +48,20 @@ export type TShippingAddress = {
   thana?: string;
 };
 
+export type TCourier = {
+  provider: TCourierProvider;
+  consignmentId?: string;
+  trackingCode?: string;
+  status?: TCourierStatus;
+  createdAt?: Date;
+  updatedAt?: Date;
+  response?: Record<string, unknown>;
+};
+
 export type TOrder = {
   orderId: string;
   userRef?: ObjectId;
-  payment?:ObjectId;
+  payment?: ObjectId;
   products: TOrderProduct[];
   shippingAddress: TShippingAddress;
   subTotalPrice: number;
@@ -50,4 +73,5 @@ export type TOrder = {
   paymentStatus: TPaymentStatus;
   status: TOrderStatus;
   note?: string;
+  courier?: TCourier;
 };

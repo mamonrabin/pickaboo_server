@@ -10,7 +10,7 @@ router.post(
 );
 router.get('/', orderController.getAllOrder);
 router.get('/:id', orderController.getSingleOrder);
-router.put('/:id', orderController.updateSingleOrder);
+router.patch('/:id', orderController.updateSingleOrder);
 router.delete('/:id', orderController.deleteSingleOrder);
 
 export const orderRoutes = router;
