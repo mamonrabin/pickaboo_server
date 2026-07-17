@@ -9,6 +9,7 @@ router.post(
   orderController.createOrder,
 );
 router.get('/', orderController.getAllOrder);
+router.get("/today", orderController.getTodayOrders);
 router.get('/:id', orderController.getSingleOrder);
 router.patch('/:id', orderController.updateSingleOrder);
 router.delete('/:id', orderController.deleteSingleOrder);

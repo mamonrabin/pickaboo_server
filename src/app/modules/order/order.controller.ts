@@ -20,6 +20,21 @@ const createOrder = catchAsync(
   },
 );
 
+const getTodayOrders = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+    const result = await orderService.getTodayOrders(
+      query as Record<string, string>,
+    );
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get all today order successfully',
+      data: result,
+    });
+  },
+);
 const getAllOrder = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
@@ -88,4 +103,5 @@ export const orderController = {
   getSingleOrder,
   updateSingleOrder,
   deleteSingleOrder,
+  getTodayOrders
 };

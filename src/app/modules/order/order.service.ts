@@ -115,6 +115,48 @@ const getAllOrder = async (query: Record<string, string>) => {
   };
 };
 
+
+
+const getTodayOrders = async (query: Record<string, string>) => {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const queryBuilder = new QueryBuilder(
+    orderModel
+      .find({
+        createdAt: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
+      })
+      .populate("userRef", "name email")
+      .populate("products.productRef", "title")
+      .populate("couponRef", "code discount"),
+    query
+  );
+
+  const orderData = queryBuilder
+    .filter()
+    .search(orderSearchableFields)
+    .sort()
+    .fields()
+    .paginate()
+    .apply();
+
+  const [data, meta] = await Promise.all([
+    orderData.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    data,
+    meta,
+  };
+};
+
 const getSingleOrder = async (id: string) => {
   const result = await orderModel.findById(id);
   return result;
@@ -138,4 +180,5 @@ export const orderService = {
   getSingleOrder,
   updateSingleOrder,
   deleteSingleOrder,
+  getTodayOrders
 };
