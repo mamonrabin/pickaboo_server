@@ -324,25 +324,80 @@ const getOrderStats = async () => {
     createdAt: { $gte: thirtyDaysAgo },
   });
 
+
+ const orderChartPromise = orderModel.aggregate([
+  {
+    $match: {
+      createdAt: {
+        $gte: new Date(new Date().setDate(new Date().getDate() - 6)),
+      },
+      // Optional: Only count paid orders
+      // paymentStatus: "PAID",
+    },
+  },
+  {
+    $group: {
+      _id: {
+        $dateToString: {
+          format: "%Y-%m-%d",
+          date: "$createdAt",
+        },
+      },
+      orders: {
+        $sum: 1,
+      },
+      revenue: {
+        $sum: "$totalPrice",
+      },
+    },
+  },
+  {
+    $sort: {
+      _id: 1,
+    },
+  },
+]);
+
+const orderStatusPromise = orderModel.aggregate([
+  {
+    $group: {
+      _id: "$status",
+      orders: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $sort: {
+      _id: 1,
+    },
+  },
+]);
+
+
   // const totalBookingByUniqueUsersPromise = bookingModel.distinct("user").then((user: any) => user.length)
 
-  const [
-    totalOrder,
-    totalOrderByCategory,
-    orderPerProduct,
-    orderToday,
-    orderLast3Days,
-    orderLast7Days,
-    orderLast30Days,
-  ] = await Promise.all([
-    totalOrderPromise,
-    totalOrderByCategoryPromise,
-    orderPerProductPromise,
-    orderTodayPromise,
-    orderLast7DaysPromise,
-    orderLast30DaysPromise,
-    orderLast3DaysPromise,
-  ]);
+const [
+  totalOrder,
+  totalOrderByCategory,
+  orderPerProduct,
+  orderToday,
+  orderLast3Days,
+  orderLast7Days,
+  orderLast30Days,
+  orderChart,
+  orderStatus
+] = await Promise.all([
+  totalOrderPromise,
+  totalOrderByCategoryPromise,
+  orderPerProductPromise,
+  orderTodayPromise,
+  orderLast3DaysPromise,
+  orderLast7DaysPromise,
+  orderLast30DaysPromise,
+  orderChartPromise,
+  orderStatusPromise
+]);
 
   return {
     totalOrder,
@@ -352,6 +407,8 @@ const getOrderStats = async () => {
     orderLast3Days,
     orderLast7Days,
     orderLast30Days,
+    orderChart,
+    orderStatus
   };
 };
 
@@ -413,9 +470,46 @@ const getPaymentStats = async () => {
     return { totalPayment, totalPaymentByStatus, totalRevenue, avgPaymentAmount, paymentGatewayData }
 }
 
+
+const getDashboardStats = async () => {
+  const [
+    totalRevenue,
+    totalOrders,
+    totalProducts,
+    totalUsers,
+  ] = await Promise.all([
+    paymentModel.aggregate([
+      {
+        $match: {
+          status: PAYMENT_STATUS.PAID,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: {
+            $sum: "$amount",
+          },
+        },
+      },
+    ]),
+    orderModel.countDocuments(),
+    productModel.countDocuments(),
+    userModel.countDocuments(),
+  ]);
+
+  return {
+    totalRevenue: totalRevenue[0]?.totalRevenue || 0,
+    totalOrders,
+    totalProducts,
+    totalUsers,
+  };
+};
+
 export const StatsService = {
   getOrderStats,
   getPaymentStats,
   getProductStats,
   getUserStats,
+  getDashboardStats 
 };

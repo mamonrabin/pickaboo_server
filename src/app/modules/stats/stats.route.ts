@@ -10,5 +10,6 @@ router.get('/user', StatsController.getUserStats);
 router.get('/products', StatsController.getProductsStats);
 router.get('/order', StatsController.getOrderStats);
 router.get('/payment', StatsController.getPaymentStats);
+router.get('/dashboard', StatsController.getDashboardStats);
 
 export const StatsRoutes = router;

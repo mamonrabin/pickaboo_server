@@ -59,10 +59,20 @@ const getPaymentStats = catchAsync(async (req: Request, res: Response) => {
         data: stats,
     });
 });
+const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+    const stats = await StatsService.getDashboardStats();
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "dashboard stats fetched successfully",
+        data: stats,
+    });
+});
 
 export const StatsController = {
     getOrderStats,
     getPaymentStats,
     getUserStats,
-    getProductsStats
+    getProductsStats,
+    getDashboardStats
 };
