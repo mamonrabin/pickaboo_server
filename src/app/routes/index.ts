@@ -22,6 +22,7 @@ import { campaignRoutes } from '../modules/campaign/campaign.route.js';
 import { couponRoutes } from '../modules/coupon/coupon.route.js';
 import { reviewRoutes } from '../modules/review/review.route.js';
 import { CourierRoutes } from '../modules/courier/courier.route.js';
+import { returnRoutes } from '../modules/return/return.route.js';
 
 export const router = Router();
 
@@ -115,9 +116,13 @@ const moduleRoutes = [
     route: campaignRoutes,
   },
   {
-    path: "/courier",
+    path: '/courier',
     route: CourierRoutes,
-}
+  },
+  {
+    path: '/return',
+    route: returnRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => {

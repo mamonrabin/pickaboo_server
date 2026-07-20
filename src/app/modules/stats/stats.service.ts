@@ -174,16 +174,61 @@ const getProductStats = async () => {
     },
   ]);
 
+
+const lowStockAlertsPromise = productModel.aggregate([
+  {
+    $addFields: {
+      availableQuantity: {
+        $max: [
+          {
+            $subtract: ["$quantity", "$soldQuantity"],
+          },
+          0,
+        ],
+      },
+    },
+  },
+  {
+    $match: {
+      availableQuantity: { $lte: 10 },
+    },
+  },
+  {
+    $project: {
+      title: 1,
+      quantity: 1,
+      soldQuantity: 1,
+      availableQuantity: 1,
+      alertType: {
+        $cond: [
+          { $lte: ["$availableQuantity", 5] },
+          "CRITICAL",
+          "LOW",
+        ],
+      },
+    },
+  },
+  {
+    $sort: {
+      availableQuantity: 1,
+    },
+  },
+]);
+
+
+
   const [
     totalProducts,
     totalProductsByCategory,
     productCost,
     totalHighestOrderProduct,
+    lowStockAlerts
   ] = await Promise.all([
     totalProductsPromise,
     totalProductsByCategoryPromise,
     productCostPromise,
     totalHighestOrderProductPromise,
+    lowStockAlertsPromise,
   ]);
 
   return {
@@ -191,6 +236,7 @@ const getProductStats = async () => {
     totalProductsByCategory,
     productCost,
     totalHighestOrderProduct,
+    lowStockAlerts,
   };
 };
 
@@ -375,6 +421,50 @@ const orderStatusPromise = orderModel.aggregate([
 ]);
 
 
+const cityStatsPromise = orderModel.aggregate([
+  {
+    $group: {
+      _id: "$shippingAddress.city",
+
+      totalOrders: {
+        $sum: 1,
+      },
+
+      totalRevenue: {
+        $sum: "$totalPrice",
+      },
+
+      totalProductsSold: {
+        $sum: {
+          $sum: "$products.quantity",
+        },
+      },
+
+      averageOrderValue: {
+        $avg: "$totalPrice",
+      },
+    },
+  },
+  {
+    $project: {
+      _id: 0,
+      city: "$_id",
+      totalOrders: 1,
+      totalRevenue: 1,
+      totalProductsSold: 1,
+      averageOrderValue: {
+        $round: ["$averageOrderValue", 2],
+      },
+    },
+  },
+  {
+    $sort: {
+      totalRevenue: -1,
+    },
+  },
+]);
+
+
   // const totalBookingByUniqueUsersPromise = bookingModel.distinct("user").then((user: any) => user.length)
 
 const [
@@ -386,7 +476,8 @@ const [
   orderLast7Days,
   orderLast30Days,
   orderChart,
-  orderStatus
+  orderStatus,
+  cityStats
 ] = await Promise.all([
   totalOrderPromise,
   totalOrderByCategoryPromise,
@@ -396,7 +487,8 @@ const [
   orderLast7DaysPromise,
   orderLast30DaysPromise,
   orderChartPromise,
-  orderStatusPromise
+  orderStatusPromise,
+  cityStatsPromise
 ]);
 
   return {
@@ -408,7 +500,8 @@ const [
     orderLast7Days,
     orderLast30Days,
     orderChart,
-    orderStatus
+    orderStatus,
+    cityStats
   };
 };
 
