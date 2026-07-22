@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { orderModel } from '../order/order.model.js';
 import { PAYMENT_STATUS } from '../payment/payment.interface.js';
 import { paymentModel } from '../payment/payment.model.js';
 import { productModel } from '../product/product.model.js';
+import { returnModel } from '../return/return.model.js';
 import { IsActive } from '../user/user.interface.js';
 import { userModel } from '../user/user.model.js';
 
@@ -216,19 +216,83 @@ const lowStockAlertsPromise = productModel.aggregate([
 ]);
 
 
+const inventoryValueStatsPromise = productModel.aggregate([
+  {
+    $project: {
+      quantity: { $ifNull: ["$quantity", 0] },
+      mrpPrice: { $ifNull: ["$mrpPrice", 0] },
+      price: { $ifNull: ["$price", 0] },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+
+      totalProducts: {
+        $sum: 1,
+      },
+
+      totalStock: {
+        $sum: "$quantity",
+      },
+
+      // Inventory value without discount
+      totalMRPValue: {
+        $sum: {
+          $multiply: ["$quantity", "$mrpPrice"],
+        },
+      },
+
+      // Inventory value after discount
+      totalSellingValue: {
+        $sum: {
+          $multiply: ["$quantity", "$price"],
+        },
+      },
+    },
+  },
+  {
+    $project: {
+      _id: 0,
+      totalProducts: 1,
+      totalStock: 1,
+      totalMRPValue: {
+        $round: ["$totalMRPValue", 2],
+      },
+      totalSellingValue: {
+        $round: ["$totalSellingValue", 2],
+      },
+      totalDiscountValue: {
+        $round: [
+          {
+            $subtract: [
+              "$totalMRPValue",
+              "$totalSellingValue",
+            ],
+          },
+          2,
+        ],
+      },
+    },
+  },
+]);
+
+
 
   const [
     totalProducts,
     totalProductsByCategory,
     productCost,
     totalHighestOrderProduct,
-    lowStockAlerts
+    lowStockAlerts,
+    inventoryValueStats
   ] = await Promise.all([
     totalProductsPromise,
     totalProductsByCategoryPromise,
     productCostPromise,
     totalHighestOrderProductPromise,
     lowStockAlertsPromise,
+    inventoryValueStatsPromise
   ]);
 
   return {
@@ -237,6 +301,7 @@ const lowStockAlertsPromise = productModel.aggregate([
     productCost,
     totalHighestOrderProduct,
     lowStockAlerts,
+     inventoryValueStats
   };
 };
 
@@ -465,7 +530,62 @@ const cityStatsPromise = orderModel.aggregate([
 ]);
 
 
-  // const totalBookingByUniqueUsersPromise = bookingModel.distinct("user").then((user: any) => user.length)
+const returnStatsPromise = returnModel.aggregate([
+  {
+    $group: {
+      _id: "$reason",
+      count: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      totalReturns: {
+        $sum: "$count",
+      },
+      reasons: {
+        $push: {
+          reason: "$_id",
+          count: "$count",
+        },
+      },
+    },
+  },
+  {
+    $project: {
+      _id: 0,
+      totalReturns: 1,
+      reasons: {
+        $map: {
+          input: "$reasons",
+          as: "reason",
+          in: {
+            reason: "$$reason.reason",
+            count: "$$reason.count",
+            percentage: {
+              $round: [
+                {
+                  $multiply: [
+                    {
+                      $divide: [
+                        "$$reason.count",
+                        "$totalReturns",
+                      ],
+                    },
+                    100,
+                  ],
+                },
+                2,
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+]);
 
 const [
   totalOrder,
@@ -477,7 +597,8 @@ const [
   orderLast30Days,
   orderChart,
   orderStatus,
-  cityStats
+  cityStats,
+  returnStats
 ] = await Promise.all([
   totalOrderPromise,
   totalOrderByCategoryPromise,
@@ -488,7 +609,8 @@ const [
   orderLast30DaysPromise,
   orderChartPromise,
   orderStatusPromise,
-  cityStatsPromise
+  cityStatsPromise,
+  returnStatsPromise
 ]);
 
   return {
@@ -501,7 +623,8 @@ const [
     orderLast30Days,
     orderChart,
     orderStatus,
-    cityStats
+    cityStats,
+    returnStats
   };
 };
 

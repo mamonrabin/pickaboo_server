@@ -23,6 +23,7 @@ import { couponRoutes } from '../modules/coupon/coupon.route.js';
 import { reviewRoutes } from '../modules/review/review.route.js';
 import { CourierRoutes } from '../modules/courier/courier.route.js';
 import { returnRoutes } from '../modules/return/return.route.js';
+import { homeRoutes } from '../modules/home-control/home-control.route.js';
 
 export const router = Router();
 
@@ -122,6 +123,10 @@ const moduleRoutes = [
   {
     path: '/return',
     route: returnRoutes,
+  },
+  {
+    path: '/home',
+    route: homeRoutes,
   },
 ];
 
