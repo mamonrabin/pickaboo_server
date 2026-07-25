@@ -19,6 +19,8 @@ const createUser = catchAsync(
   },
 );
 
+
+
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
@@ -34,6 +36,20 @@ const getAllUsers = catchAsync(
       meta: result.meta,
     });
   },
+);
+
+
+const getAllStaffs = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await userServices.getAllStaffs();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All Staffs Retrieved Successfully",
+      data: result,
+    });
+  }
 );
 
 const getMe = catchAsync(async (req: Request, res: Response) => {
@@ -123,4 +139,5 @@ export const userControllers = {
   getMe,
   deleteSingleUser,
   updateSingleUser,
+  getAllStaffs
 };

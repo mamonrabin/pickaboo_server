@@ -1,6 +1,6 @@
 
 import httpStatus from "http-status-codes";
-import type { IAuthProvider, IUser } from "./user.interface.js";
+import { Role, type IAuthProvider, type IUser } from "./user.interface.js";
 import bcryptjs from "bcryptjs";
 import AppError from "../../helpers/AppError.js";
 import config from "../../config/index.js";
@@ -35,7 +35,11 @@ const createUser = async (payload:IUser) => {
 
 const getAllUsers = async (query: Record<string, string>) => {
 
-    const queryBuilder = new QueryBuilder(userModel.find(), query)
+    const queryBuilder = new QueryBuilder(userModel.find({
+      role: {
+        $nin: [Role.STAFF, Role.ADMIN, Role.SUPER_ADMIN],
+      },
+    }), query)
     const usersData = queryBuilder
         .filter()
         .search(userSearchableFields)
@@ -53,6 +57,19 @@ const getAllUsers = async (query: Record<string, string>) => {
         data,
         meta
     }
+};
+
+
+const getAllStaffs = async () => {
+  const data = await userModel
+    .find({
+      role: {
+        $nin: [Role.USER, Role.SUPER_ADMIN],
+      },
+    })
+    .sort({ createdAt: -1 });
+
+  return data;
 };
 
 
@@ -87,5 +104,6 @@ export const userServices = {
     getSingleUser,
     getMe,
     deleteSingleUser,
-    updateSingleUser
+    updateSingleUser,
+    getAllStaffs
 }

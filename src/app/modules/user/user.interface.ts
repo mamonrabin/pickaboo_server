@@ -3,6 +3,7 @@ import type { Types } from 'mongoose';
 export enum Role {
   SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
+  STAFF = 'STAFF',
   USER = 'USER',
 }
 

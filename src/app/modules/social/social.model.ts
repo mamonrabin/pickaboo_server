@@ -1,13 +1,18 @@
 import { model, Schema } from 'mongoose';
-import type { TSocialIcon } from './social.interface.js';
+import { SocialType, Status, type TSocialIcon } from './social.interface.js';
 
 const socialIconSchema = new Schema<TSocialIcon>(
   {
     link: { type: String, required: true },
+    socialType: {
+      type: String,
+      enum: Object.values(SocialType),
+      required: true,
+    },
     type: {
       type: String,
-      enum: ['facebook', 'instagram', 'twitter', 'youtube', 'tiktok', 'likie'],
-      required: true,
+      enum: Object.values(Status),
+      default: Status.ACTIVE,
     },
   },
   {
