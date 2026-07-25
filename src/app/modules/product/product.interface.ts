@@ -1,5 +1,10 @@
 import type { Types } from 'mongoose';
 
+export enum Status {
+  Active = 'Active',
+  InActive = 'InActive',
+}
+
 export type StockStatus = 'in_stock' | 'out_of_stock' | 'pre_order';
 export type ProductLabel =
   | 'New'
@@ -50,6 +55,7 @@ export type TProduct = {
   barcode?: string;
 
   stock_status?: StockStatus;
+  status: Status;
 
   inventoryType?: string;
   inventories?: TInventory[];

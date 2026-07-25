@@ -1,7 +1,8 @@
 import { model, Schema, type HydratedDocument } from 'mongoose';
-import type { TProduct } from './product.interface.js';
+import { Status, type TProduct } from './product.interface.js';
 import { generateSlug } from '../../utils/slug.js';
 import { generateSku } from '../../utils/generateSku.js';
+import { generateBarcode } from '../../utils/generateBarcode.js';
 
 const specificationSchema = new Schema(
   {
@@ -60,7 +61,11 @@ const productSchema = new Schema<TProduct>(
 
     sku: { type: String, unique: true, sparse: true },
 
-    barcode: { type: String },
+    barcode: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
 
     inventoryType: { type: String },
 
@@ -77,6 +82,12 @@ const productSchema = new Schema<TProduct>(
       type: String,
       enum: ['in_stock', 'out_of_stock', 'pre_order'],
       default: 'in_stock',
+    },
+
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.Active,
     },
 
     video_url: String,
@@ -109,7 +120,7 @@ productSchema.virtual('availableQuantity').get(function () {
   return Math.max((this.quantity || 0) - (this.soldQuantity || 0), 0);
 });
 
-productSchema.pre('save', function () {
+productSchema.pre('save', async function () {
   const product = this as HydratedDocument<TProduct>;
 
   /* ---------- Auto Quantity from Inventory ---------- */
@@ -133,6 +144,12 @@ productSchema.pre('save', function () {
         brandId: product.brand?.toString() || '',
         prefix: 'PRD',
       });
+    }
+
+    if (product.isNew && !product.barcode) {
+      console.log('Generating barcode...');
+      product.barcode = await generateBarcode();
+      console.log(product.barcode);
     }
 
     // PRICE CALCULATION
