@@ -1,13 +1,18 @@
 import { model, Schema, type HydratedDocument } from 'mongoose';
 
 import { generateSlug } from '../../utils/slug.js';
-import type { TBrand } from './brand.interface.js';
+import { Status, type TBrand } from './brand.interface.js';
 
 const brandSchema = new Schema<TBrand>(
   {
     title: { type: String },
     slug: { type: String, unique: true },
     image: { type: String, default: '', required: true },
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.Active,
+    },
   },
   {
     timestamps: true,

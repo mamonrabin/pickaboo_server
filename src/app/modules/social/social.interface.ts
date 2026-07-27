@@ -13,12 +13,12 @@ export enum SocialType {
 }
 
 export enum Status {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+  Active = 'Active',
+  InActive = 'InActive',
 }
 
 export type TSocialIcon = {
   link: string;
   socialType: SocialType;
-  type: Status;
+  status: Status;
 };

@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import type { TPolicy } from './policy.interface.js';
+import { Status, type TPolicy } from './policy.interface.js';
 
 const policySchema = new Schema<TPolicy>(
   {
@@ -10,6 +10,11 @@ const policySchema = new Schema<TPolicy>(
       enum: ['privacy', 'condition', 'return', 'order', 'shipping'],
       required: true,
       default: 'privacy',
+    },
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.Active,
     },
   },
   {

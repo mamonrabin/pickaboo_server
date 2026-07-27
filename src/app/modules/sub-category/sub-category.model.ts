@@ -1,7 +1,7 @@
 import { model, Schema, type HydratedDocument } from 'mongoose';
 
 import { generateSlug } from '../../utils/slug.js';
-import type { TSubCategory } from './sub-category.interface.js';
+import { Status, type TSubCategory } from './sub-category.interface.js';
 
 const subcategorySchema = new Schema<TSubCategory>(
   {
@@ -13,6 +13,11 @@ const subcategorySchema = new Schema<TSubCategory>(
     subcategoryName: { type: String, required: true },
     slug: { type: String, unique: true },
     image: { type: String, default: '', required: true },
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.Active,
+    },
   },
   {
     timestamps: true,
@@ -28,6 +33,7 @@ subcategorySchema.pre('save', async function () {
   ) {
     subcategory.slug = generateSlug(subcategory.subcategoryName);
   }
+
 });
 
 export const subcategoryModel = model<TSubCategory>(

@@ -147,9 +147,7 @@ productSchema.pre('save', async function () {
     }
 
     if (product.isNew && !product.barcode) {
-      console.log('Generating barcode...');
       product.barcode = await generateBarcode();
-      console.log(product.barcode);
     }
 
     // PRICE CALCULATION

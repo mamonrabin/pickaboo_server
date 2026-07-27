@@ -1,4 +1,8 @@
 import type { ObjectId } from 'mongoose';
+export enum Status {
+  Active = 'Active',
+  InActive = 'InActive',
+}
 
 export type TCoupon = {
   code: string;
@@ -15,4 +19,5 @@ export type TCoupon = {
   subCategoryID?: ObjectId;
   brandID?: ObjectId;
   isActive: boolean;
+  status: Status;
 };

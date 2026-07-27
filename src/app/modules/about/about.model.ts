@@ -1,15 +1,15 @@
 import { model, Schema } from 'mongoose';
-import type { TAbout } from './about.interface.js';
+import { AboutType, type TAbout } from './about.interface.js';
 
 
 const aboutSchema = new Schema<TAbout>(
   {
     description: { type: String, required: true },
-   type: {
-      type: String,
-      enum: ['active', 'inactive'],
-      default: 'inactive',
-    },
+    type: {
+            type: String,
+            enum: Object.values(AboutType),
+            default: AboutType.Active,
+          },
     video: { type: String },
    
 

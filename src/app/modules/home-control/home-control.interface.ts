@@ -9,6 +9,7 @@ export type TLandingpage =
   | 'Testimonials'
   | 'FAQ'
   | 'Newsletter';
+
 export type TOrder =
   | 'first'
   | 'second'
@@ -19,12 +20,17 @@ export type TOrder =
   | 'seventh'
   | 'eighth'
   | 'ninth'
-  | 'tenth'
+  | 'tenth';
 
+export enum Status {
+  Active = 'Active',
+  InActive = 'InActive',
+}
 
 export type THome = {
   title?: string;
-  enabled: 'Active' | 'In Active';
+  subTitle?: string;
+  status: Status;
   order: TOrder;
   landing: TLandingpage;
 };

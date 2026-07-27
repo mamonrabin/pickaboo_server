@@ -9,10 +9,10 @@ const socialIconSchema = new Schema<TSocialIcon>(
       enum: Object.values(SocialType),
       required: true,
     },
-    type: {
+    status: {
       type: String,
       enum: Object.values(Status),
-      default: Status.ACTIVE,
+      default: Status.Active,
     },
   },
   {

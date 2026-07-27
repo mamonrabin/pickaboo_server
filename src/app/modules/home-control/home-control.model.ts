@@ -1,9 +1,12 @@
 import { model, Schema } from 'mongoose';
-import type { THome } from './home-control.interface.js';
+import { Status, type THome } from './home-control.interface.js';
 
 const homeSchema = new Schema<THome>(
   {
     title: {
+      type: String,
+    },
+    subTitle: {
       type: String,
     },
     landing: {
@@ -39,10 +42,10 @@ const homeSchema = new Schema<THome>(
       required: true,
     },
 
-    enabled: {
+   status: {
       type: String,
-      enum: ['Active', 'In Active'],
-      default: 'Active',
+      enum: Object.values(Status),
+      default: Status.Active,
     },
   },
   {

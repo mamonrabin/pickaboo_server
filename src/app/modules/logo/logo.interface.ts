@@ -1,4 +1,7 @@
-export type TLogoType =  'active' | 'inactive';
+export enum Status {
+  Active = 'Active',
+  InActive = 'InActive',
+}
 
 export type TLogo = {
   headerLogo: string;
@@ -8,5 +11,5 @@ export type TLogo = {
   phone?:string
   whatsapp?:string
   email?:string
-  type?:TLogoType
+   status: Status;
 };

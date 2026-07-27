@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import type { TBanner } from './banner.interface.js';
+import { Status, type TBanner } from './banner.interface.js';
 
 const bannerSchema = new Schema<TBanner>(
   {
@@ -13,6 +13,11 @@ const bannerSchema = new Schema<TBanner>(
       type: String,
       enum: ['Main', 'Offer','Promotion'],
       default: 'Main',
+    },
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.Active,
     },
   },
   {

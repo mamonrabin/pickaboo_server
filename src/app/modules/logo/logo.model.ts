@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import type { TLogo } from './logo.interface.js';
+import { Status, type TLogo } from './logo.interface.js';
 
 const logoSchema = new Schema<TLogo>(
   {
@@ -10,10 +10,10 @@ const logoSchema = new Schema<TLogo>(
     phone: { type: String },
     whatsapp: { type: String },
     email: { type: String },
-    type: {
+    status: {
       type: String,
-      enum: ['active', 'inactive'],
-      default: 'inactive',
+      enum: Object.values(Status),
+      default: Status.Active,
     },
   },
   {

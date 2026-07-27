@@ -1,5 +1,5 @@
 import { model, Schema, type HydratedDocument } from 'mongoose';
-import type { TCategory } from './category.interface.js';
+import { Status, type TCategory } from './category.interface.js';
 import { generateSlug } from '../../utils/slug.js';
 
 const categorySchema = new Schema<TCategory>(
@@ -8,6 +8,11 @@ const categorySchema = new Schema<TCategory>(
     title: { type: String },
     slug: { type: String, unique: true },
     image: { type: String, default: '', required: true },
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.Active,
+    },
   },
   {
     timestamps: true,

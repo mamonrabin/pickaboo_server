@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import type { TCoupon } from './coupon.interface.js';
+import { Status, type TCoupon } from './coupon.interface.js';
 
 const couponSchema = new Schema<TCoupon>(
   {
@@ -77,6 +77,11 @@ const couponSchema = new Schema<TCoupon>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(Status),
+      default: Status.Active,
     },
   },
   {

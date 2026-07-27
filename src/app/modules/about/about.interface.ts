@@ -1,8 +1,10 @@
 
-export type TAboutType = 'active' | 'inactive';
+export enum AboutType {
+  Active = 'Active',
+  InActive = 'InActive',
+}
 export type TAbout = {
   description: string;
-   type: TAboutType;
+  type: AboutType;
   video?: string;
-
 };
