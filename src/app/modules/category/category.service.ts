@@ -8,10 +8,10 @@ const createCategory = async (category: TCategory) => {
   const result = await categoryModel.create(category);
   return result;
 };
-// const getAllCategory = async () => {
-//   const result = await categoryModel.find();
-//   return result;
-// };
+const getAllCategoryWithOutBuilder = async () => {
+  const result = await categoryModel.find();
+  return result;
+};
 
 const getAllCategory = async (query: Record<string, string>) => {
 
@@ -63,6 +63,7 @@ const deleteSingleCategory = async (id: string) => {
 
 export const categoryService = {
   createCategory,
+  getAllCategoryWithOutBuilder,
   getAllCategory,
   getSingleCategory,
   getSingleCategoryBySlug,

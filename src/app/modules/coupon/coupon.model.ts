@@ -7,7 +7,6 @@ const couponSchema = new Schema<TCoupon>(
       type: String,
       required: true,
       unique: true,
-      uppercase: true,
       trim: true,
     },
 

@@ -26,6 +26,19 @@ const createSubCategory = catchAsync(
   },
 );
 
+const getAllSubCategoryWithOutBuilder = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await subcategoryService.getAllSubCategoryWithOutBuilder();
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get all sub category successfully',
+      data: result,
+    });
+  },
+);
+
 const getAllSubCategory = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
@@ -110,6 +123,7 @@ const deleteSingleSubCategory = catchAsync(
 
 export const subcategoryController = {
   createSubCategory,
+  getAllSubCategoryWithOutBuilder,
   getAllSubCategory,
   getSingleSubCategory,
   getSingleSubCategoryBySlug,

@@ -9,6 +9,7 @@ router.post(
   upload.single('image'),
   categoryController.createCategory,
 );
+router.get('/all', categoryController.getAllCategoryWithOutBuilder);
 router.get('/', categoryController.getAllCategory);
 router.get('/:id', categoryController.getSingleCategory);
 router.get('/categorySlug/:slug', categoryController.getSingleCategoryBySlug);

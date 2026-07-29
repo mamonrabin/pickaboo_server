@@ -25,6 +25,18 @@ const createCategory = catchAsync(
   },
 );
 
+const getAllCategoryWithOutBuilder = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await categoryService.getAllCategoryWithOutBuilder();
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: ' get all category successfully',
+      data: result,
+    });
+  },
+);
 const getAllCategory = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
@@ -110,6 +122,7 @@ const deleteSingleCategory = catchAsync(
 export const categoryController = {
   createCategory,
   getAllCategory,
+  getAllCategoryWithOutBuilder,
   getSingleCategory,
   getSingleCategoryBySlug,
   updateSingleCategory,

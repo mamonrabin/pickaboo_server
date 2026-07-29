@@ -12,7 +12,7 @@ const subcategorySchema = new Schema<TSubCategory>(
     },
     subcategoryName: { type: String, required: true },
     slug: { type: String, unique: true },
-    image: { type: String, default: '', required: true },
+    image: { type: String, default: '' },
     status: {
       type: String,
       enum: Object.values(Status),

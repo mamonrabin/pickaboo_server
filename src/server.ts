@@ -3,6 +3,7 @@ import { Server } from "http";
 import config from "./app/config/index.js";
 import app from "./app.js";
 import { connectRedis } from "./app/config/redis.config.js";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin.js";
 
 
 let server: Server
@@ -22,7 +23,7 @@ async function main() {
 (async () => {
     await connectRedis()
     await main()
-    
+    await seedSuperAdmin()
 })()
 
 

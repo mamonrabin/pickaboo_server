@@ -25,6 +25,19 @@ const createBrand = catchAsync(
   },
 );
 
+const getAllBrandWithoutBuilder = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+    const result = await brandService.getAllBrandWithoutBuilder();
+
+    return sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'get all brand successfully',
+      data: result,
+    });
+  },
+);
 const getAllBrand = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
@@ -109,6 +122,7 @@ const deleteSingleBrand = catchAsync(
 
 export const brandController = {
   createBrand,
+  getAllBrandWithoutBuilder,
   getAllBrand,
   getSingleBrand,
   getSingleBrandBySlug,

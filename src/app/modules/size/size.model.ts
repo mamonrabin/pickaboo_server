@@ -5,7 +5,7 @@ import type { TSize } from './size.interface.js';
 
 const sizeSchema = new Schema<TSize>(
   {
-    title: { type: String },
+    size: { type: String },
     slug: { type: String, unique: true },
   },
   {
@@ -17,10 +17,10 @@ sizeSchema.pre('save', async function () {
   const size = this as HydratedDocument<TSize>;
 
   if (
-    (size.isModified('title') || size.isNew) &&
-    size.title
+    (size.isModified('size') || size.isNew) &&
+    size.size
   ) {
-    size.slug = generateSlug(size.title);
+    size.slug = generateSlug(size.size);
   }
 });
 

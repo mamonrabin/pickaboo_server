@@ -9,10 +9,10 @@ const createSubCategor = async (subcategory: TSubCategory) => {
   const result = await subcategoryModel.create(subcategory);
   return result;
 };
-// const getAllCategory = async () => {
-//   const result = await subcategoryModel.find();
-//   return result;
-// };
+const getAllSubCategoryWithOutBuilder = async () => {
+  const result = await subcategoryModel.find().populate("category","categoryName");
+  return result;
+};
 
 const getAllSubCategory = async (query: Record<string, string>) => {
 
@@ -63,6 +63,7 @@ const deleteSingleSubCategory = async (id: string) => {
 
 export const subcategoryService = {
   createSubCategor,
+  getAllSubCategoryWithOutBuilder,
   getAllSubCategory,
   getSingleSubCategory,
   getSingleSubCategoryBySlug,

@@ -1,4 +1,4 @@
 export type TSize = {
-  title: string;
+  size: string;
   slug: string;
 };

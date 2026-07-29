@@ -72,8 +72,10 @@ const productSchema = new Schema<TProduct>(
     inventories: [
       {
         color: String,
+       
         colorName: String,
         size: String,
+       
         quantity: { type: Number, default: 0 },
       },
     ],

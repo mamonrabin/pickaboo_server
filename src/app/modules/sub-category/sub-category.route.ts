@@ -10,6 +10,7 @@ router.post(
   upload.single('image'),
   subcategoryController.createSubCategory,
 );
+router.get('/all', subcategoryController.getAllSubCategoryWithOutBuilder);
 router.get('/', subcategoryController.getAllSubCategory);
 router.get('/:id', subcategoryController.getSingleSubCategory);
 router.get('/subcategorySlug/:slug', subcategoryController.getSingleSubCategoryBySlug);

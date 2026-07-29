@@ -10,6 +10,7 @@ router.post(
   upload.single('image'),
   brandController.createBrand,
 );
+router.get('/all', brandController.getAllBrandWithoutBuilder);
 router.get('/', brandController.getAllBrand);
 router.get('/:id', brandController.getSingleBrand);
 router.get('/brandSlug/:slug', brandController.getSingleBrandBySlug);

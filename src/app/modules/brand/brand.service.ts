@@ -9,10 +9,10 @@ const createBrand = async (brand: TBrand) => {
   const result = await brandModel.create(brand);
   return result;
 };
-// const getAllCategory = async () => {
-//   const result = await brandModel.find();
-//   return result;
-// };
+const getAllBrandWithoutBuilder = async () => {
+  const result = await brandModel.find();
+  return result;
+};
 
 const getAllBrand = async (query: Record<string, string>) => {
 
@@ -62,6 +62,7 @@ const deleteSingleBrand = async (id: string) => {
 
 export const brandService = {
   createBrand,
+  getAllBrandWithoutBuilder,
   getAllBrand,
   getSingleBrand,
   getSingleBrandBySlug,

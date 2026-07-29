@@ -26,6 +26,7 @@ export type TInventory = {
   quantity: number;
 };
 
+
 export type TProduct = {
   title: string;
   slug?: string;
