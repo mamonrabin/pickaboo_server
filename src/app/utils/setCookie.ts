@@ -7,9 +7,10 @@ export interface AuthTokens {
 export const setAuthCookie = (res: Response, tokenInfo: AuthTokens) => {
   res.cookie('accessToken', tokenInfo.accessToken, {
     httpOnly: true,
-    secure: false, //localhost
-    // secure: true, //production
-    sameSite: 'lax',
+    // secure: false, //localhost
+    secure: true, //production
+    // sameSite: 'lax', //localhost
+    sameSite: 'none',
   });
 };
 
